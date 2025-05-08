@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eylül’üm</title>
   <style>
-    body {
+    * {
       margin: 0;
-      overflow: hidden;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
       background-color: black;
+      overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
-      color: #ff7aa2;
+      color: #ffb6c1;
     }
 
     .center-text {
@@ -18,33 +23,42 @@
       top: 30%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 3em;
-      font-weight: bold;
+      font-size: 3.5em;
       text-align: center;
-      color: #ffb6c1;
-      z-index: 2;
+      font-weight: bold;
+      z-index: 3;
+      color: #ff85a2;
     }
 
-    .falling-text {
+    .heart {
       position: absolute;
-      top: 0;
-      white-space: nowrap;
-      font-size: 1.5em;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 4em;
+      color: #ff4d6d;
+      animation: pulse 1.5s infinite;
+      z-index: 3;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.3); }
+    }
+
+    .letter {
+      position: absolute;
+      font-size: 1.6em;
       color: #ff7aa2;
-      animation: fall linear infinite;
       opacity: 0.15;
       pointer-events: none;
+      z-index: 1;
+      animation: fall linear forwards;
     }
 
     @keyframes fall {
-      0% {
-        top: -100px;
-        opacity: 0.3;
-      }
-      100% {
-        top: 100%;
-        opacity: 0;
-      }
+      0% { top: -50px; opacity: 0.3; }
+      100% { top: 100vh; opacity: 0; }
     }
 
     .petal {
@@ -56,35 +70,12 @@
       background-repeat: no-repeat;
       animation: fallPetal linear infinite;
       opacity: 0.8;
-      z-index: 1;
-    }
-
-    @keyframes fallPetal {
-      0% {
-        top: -50px;
-        transform: rotate(0deg);
-      }
-      100% {
-        top: 100%;
-        transform: rotate(360deg);
-      }
-    }
-
-    .heart {
-      position: absolute;
-      bottom: 5%;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 3em;
-      animation: pulse 1s infinite;
-      color: #ff4d6d;
       z-index: 2;
     }
 
-    @keyframes pulse {
-      0% { transform: translateX(-50%) scale(1); }
-      50% { transform: translateX(-50%) scale(1.2); }
-      100% { transform: translateX(-50%) scale(1); }
+    @keyframes fallPetal {
+      0% { top: -50px; transform: rotate(0deg); }
+      100% { top: 100vh; transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -92,25 +83,29 @@
   <div class="center-text">Eylül’üm Seni Çok Seviyorum Canım Aşkım</div>
   <div class="heart">❤</div>
 
-  <audio autoplay loop>
+  <!-- Müzik -->
+  <audio id="bg-music" autoplay loop>
     <source src="sarki.mp3" type="audio/mpeg">
-    Tarayıcınız ses dosyasını desteklemiyor.
+    Tarayıcınız müziği desteklemiyor.
   </audio>
 
   <script>
-    const words = ["Anneler", "Günün", "Kutlu", "Olsun,", "Ömerimin", "Annesi"];
+    // Harf harf kayan yazı
+    const phrase = "Anneler Günün Kutlu Olsun, Ömerimin Annesi";
+    let delay = 0;
     const screenWidth = window.innerWidth;
 
-    function createFallingText(word, delay) {
-      const span = document.createElement("span");
-      span.classList.add("falling-text");
-      span.textContent = word;
-      span.style.left = `${Math.random() * screenWidth}px`;
-      span.style.animationDuration = `${4 + Math.random() * 4}s`;
-      span.style.animationDelay = `${delay}s`;
-      document.body.appendChild(span);
+    for (let i = 0; i < phrase.length; i++) {
+      const letter = document.createElement("span");
+      letter.className = "letter";
+      letter.textContent = phrase[i];
+      letter.style.left = `${Math.random() * screenWidth}px`;
+      letter.style.animationDuration = `${4 + Math.random() * 3}s`;
+      letter.style.animationDelay = `${i * 0.3}s`;
+      document.body.appendChild(letter);
     }
 
+    // Gül yaprakları
     function createPetal() {
       const petal = document.createElement("div");
       petal.classList.add("petal");
@@ -120,18 +115,15 @@
       setTimeout(() => petal.remove(), 10000);
     }
 
-    // Kelime kelime iniş efekti
-    let delay = 0;
-    setInterval(() => {
-      const word = words[Math.floor(Math.random() * words.length)];
-      createFallingText(word, delay);
-      delay += 0.5;
-    }, 800);
+    setInterval(createPetal, 400);
 
-    // Gül yaprağı efekti
-    setInterval(() => {
-      createPetal();
-    }, 400);
+    // Otomatik müzik başlat (bazı tarayıcılarda kullanıcı etkileşimi gerekebilir)
+    window.addEventListener("click", () => {
+      const audio = document.getElementById("bg-music");
+      if (audio.paused) {
+        audio.play();
+      }
+    });
   </script>
 </body>
 </html>
