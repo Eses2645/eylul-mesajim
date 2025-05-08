@@ -1,66 +1,93 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Canım Eylül</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Eylülüm</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      overflow: hidden;
+      background-color: black;
       height: 100%;
-      background: black;
-      color: #00ff00;
-      font-family: monospace;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
     }
+
     canvas {
-      display: block;
-      width: 100vw;
-      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #00ff88;
+      font-size: 8vw;
+      text-align: center;
+      z-index: 1;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 600px) {
+      .message {
+        font-size: 10vw;
+      }
     }
   </style>
 </head>
 <body>
-<canvas id="matrixCanvas"></canvas>
+  <canvas id="canvas"></canvas>
+  <div class="message">Eylülüm\nSeni Çok Seviyorum</div>
 
-<script>
-  const canvas = document.getElementById("matrixCanvas");
-  const ctx = canvas.getContext("2d");
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
-  // Sayfa boyutuna göre canvas ayarla
-  function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-  }
 
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
+    const phrase = "Eylülüm Seni Çok Seviyorum";
+    const letters = phrase.split('');
+    const fontSize = 24;
+    const columns = Math.floor(canvas.width / fontSize);
 
-  const fontSize = 20;
-  const columns = Math.floor(canvas.width / fontSize);
-  const drops = new Array(columns).fill(1);
-  const word = "Eylülüm seni çok seviyorum";
+    const drops = Array.from({length: columns}, (_, i) => ({
+      x: i,
+      y: Math.random() * canvas.height / fontSize,
+      index: 0
+    }));
 
-  function draw() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#00ff00";
-    ctx.font = `${fontSize}px monospace`;
+    function draw() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#00ff88';
+      ctx.font = fontSize + "px monospace";
 
-    for (let i = 0; i < drops.length; i++) {
-      const char = word[Math.floor(Math.random() * word.length)];
-      ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+      drops.forEach(drop => {
+        const char = letters[drop.index % letters.length];
+        ctx.fillText(char, drop.x * fontSize, drop.y * fontSize);
 
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-        drops[i] = 0;
-      }
+        drop.y += 1;
+        drop.index++;
 
-      drops[i]++;
+        if (drop.y * fontSize > canvas.height) {
+          drop.y = 0;
+          drop.index = 0;
+        }
+      });
     }
-  }
 
-  setInterval(draw, 50);
-</script>
+    setInterval(draw, 70);
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
 </body>
 </html>
