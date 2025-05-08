@@ -2,114 +2,125 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Eylül’üm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eylül’üm İçin</title>
   <style>
-    body {
+    html, body {
       margin: 0;
-      background: black;
+      padding: 0;
       overflow: hidden;
+      background-color: black;
+      height: 100%;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    canvas {
+    .matrix-text {
       position: fixed;
       top: 0;
       left: 0;
-      z-index: 0;
+      color: rgba(0, 255, 0, 0.1);
+      font-size: 16px;
+      white-space: nowrap;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
     }
 
-    .message {
-      position: fixed;
+    .center-message {
+      position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 4vw;
+      color: #ff5e9c;
+      font-size: 6vw;
       text-align: center;
-      color: #ffb6c1;
-      text-shadow: 2px 2px 5px #000;
-      z-index: 1;
-      padding: 0 5vw;
+      z-index: 3;
+      font-weight: bold;
+      text-shadow: 0 0 10px #ff5e9c;
     }
 
     .petal {
       position: fixed;
-      width: 30px;
-      height: 30px;
+      width: 40px;
+      height: 40px;
       background-image: url('IMG_2039.png');
       background-size: contain;
       background-repeat: no-repeat;
       z-index: 2;
       animation: fall linear infinite;
+      pointer-events: none;
     }
 
     @keyframes fall {
-      to {
-        transform: translateY(100vh) rotate(360deg);
+      0% {
+        top: -50px;
+        transform: rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        top: 100vh;
+        transform: rotate(360deg);
         opacity: 0;
       }
-    }
-
-    audio {
-      display: none;
     }
   </style>
 </head>
 <body>
 
-<canvas id="matrix"></canvas>
+  <!-- Orta yazı -->
+  <div class="center-message">Eylül’üm Seni Çok Seviyorum Canım Aşkım</div>
 
-<div class="message">Eylül’üm Seni Çok Seviyorum Canım Aşkım</div>
+  <!-- Matrix tarzı arka plan yazıları -->
+  <div class="matrix-text" id="matrix"></div>
 
-<script>
-  const canvas = document.getElementById('matrix');
-  const ctx = canvas.getContext('2d');
+  <!-- Arka plan müziği -->
+  <audio id="bg-music" loop>
+    <source src="sarki.mp3" type="audio/mpeg">
+  </audio>
 
-  canvas.height = window.innerHeight;
-  canvas.width = window.innerWidth;
+  <script>
+    // Müziği başlat (mobil uyumluluk için tıklamayı bekler)
+    window.addEventListener('click', function () {
+      const music = document.getElementById('bg-music');
+      music.play();
+    }, { once: true });
 
-  const letters = "Anneler Günün Kutlu Olsun, Ömerimin Annesi".split("");
-  const fontSize = 16;
-  const columns = canvas.width / fontSize;
-  const drops = Array(Math.floor(columns)).fill(1);
+    // Matrix yazı efekti
+    const matrixEl = document.getElementById('matrix');
+    const columns = Math.floor(window.innerWidth / 20);
+    let drops = Array(columns).fill(0);
+    let texts = Array(columns).fill("Anneler Günün Kutlu Olsun, Ömerimin Annesi");
 
-  function drawMatrix() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#ffb6c1";
-    ctx.font = fontSize + "px monospace";
-
-    for (let i = 0; i < drops.length; i++) {
-      const text = letters[i % letters.length];
-      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-      if (Math.random() > 0.975) {
-        drops[i] = 0;
+    function drawMatrix() {
+      let output = '';
+      for (let i = 0; i < columns; i++) {
+        const text = texts[i];
+        output += `<span style="position:absolute; left:${i * 20}px; top:${drops[i] * 20}px;">${text}</span>`;
+        drops[i] += 0.5;
+        if (drops[i] * 20 > window.innerHeight && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
       }
-      drops[i]++;
+      matrixEl.innerHTML = output;
     }
-  }
+    setInterval(drawMatrix, 100);
 
-  setInterval(drawMatrix, 100);
+    // Gül yaprakları
+    function createPetal() {
+      const petal = document.createElement("div");
+      petal.className = "petal";
+      petal.style.left = Math.random() * 100 + "vw";
+      petal.style.animationDuration = 5 + Math.random() * 5 + "s";
+      document.body.appendChild(petal);
+      setTimeout(() => {
+        petal.remove();
+      }, 10000);
+    }
 
-  // Gül yaprakları
-  function createPetal() {
-    const petal = document.createElement('div');
-    petal.classList.add('petal');
-    petal.style.left = Math.random() * 100 + 'vw';
-    petal.style.animationDuration = 5 + Math.random() * 5 + 's';
-    document.body.appendChild(petal);
-
-    setTimeout(() => {
-      petal.remove();
-    }, 10000);
-  }
-
-  setInterval(createPetal, 300);
-</script>
-
-<audio autoplay loop>
-  <source src="sarki.mp3" type="audio/mpeg">
-</audio>
+    setInterval(createPetal, 500);
+  </script>
 
 </body>
 </html>
