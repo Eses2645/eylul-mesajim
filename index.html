@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Eylül’e Sevgiyle</title>
+  <title>Anneler Günü</title>
   <style>
-    html, body {
+    body, html {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      height: 100%;
       background: black;
-      color: #ffccdd;
       font-family: 'Segoe UI', sans-serif;
     }
 
@@ -19,24 +17,42 @@
       position: absolute;
       top: 0;
       left: 0;
-      z-index: 0;
-    }
-
-    .center-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 5vw;
-      text-align: center;
-      color: #ff99aa;
-      animation: fadeInText 3s ease-out forwards;
       z-index: 1;
     }
 
-    @keyframes fadeInText {
+    .message {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ff4f8b;
+      font-size: 6vw;
+      text-align: center;
+      z-index: 2;
+      animation: fadeIn 4s ease-in-out;
+      white-space: pre-wrap;
+    }
+
+    @keyframes fadeIn {
       0% { opacity: 0; transform: translate(-50%, -60%); }
       100% { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    .petal {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background-image: url('https://i.ibb.co/HF3pbTr/rose-petal.png');
+      background-size: cover;
+      z-index: 3;
+      opacity: 0.8;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-50px) rotate(0deg); opacity: 0; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 1; }
     }
 
     .heart {
@@ -44,93 +60,77 @@
       bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
-      width: 100px;
-      height: 90px;
-      background-color: red;
-      clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 50% 80%, 20% 100%, 0% 35%);
-      animation: pulse 1.5s infinite;
-      z-index: 2;
+      font-size: 3rem;
+      color: red;
+      animation: pulse 2s infinite;
+      z-index: 4;
     }
 
     @keyframes pulse {
       0%, 100% { transform: translateX(-50%) scale(1); }
-      50% { transform: translateX(-50%) scale(1.2); }
-    }
-
-    .petal {
-      position: absolute;
-      top: -50px;
-      color: pink;
-      font-size: 1.5em;
-      user-select: none;
-      z-index: 0;
+      50% { transform: translateX(-50%) scale(1.3); }
     }
   </style>
 </head>
 <body>
 
-<canvas id="matrixCanvas"></canvas>
-<div class="center-text">Anneler Günün Kutlu Olsun, Ömerimin Annesi</div>
+<canvas id="matrix"></canvas>
+<div class="message">Anneler Günün Kutlu Olsun,\nÖmerimin Annesi</div>
+<div class="heart">❤️</div>
 <audio autoplay loop>
   <source src="sarki.mp3" type="audio/mpeg">
 </audio>
-<div class="heart"></div>
 
 <script>
-  // Matrix "Anneler Günün Kutlu Olsun" Yağmur
-  const canvas = document.getElementById("matrixCanvas");
+  // Matrix yağmur efekti
+  const canvas = document.getElementById("matrix");
   const ctx = canvas.getContext("2d");
-
-  canvas.height = window.innerHeight;
   canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-  const letters = "Anneler Günün Kutlu Olsun".split("");
+  const message = "Anneler Günün Kutlu Olsun, Ömerimin Annesi";
+  const letters = message.split("");
   const fontSize = 20;
-  const columns = canvas.width / fontSize;
-  const drops = Array.from({ length: columns }).fill(1);
+  const columns = Math.floor(canvas.width / (fontSize * 1.5));
+  const drops = Array(columns).fill(1);
 
   function drawMatrix() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#ff66aa";
-    ctx.font = `${fontSize}px monospace`;
+    ctx.fillStyle = "#0F0";
+    ctx.font = fontSize + "px monospace";
 
-    drops.forEach((y, i) => {
-      const text = letters[Math.floor(Math.random() * letters.length)];
-      const x = i * fontSize;
-      ctx.fillText(text, x, y * fontSize);
-
-      if (y * fontSize > canvas.height && Math.random() > 0.975) {
+    for (let i = 0; i < drops.length; i++) {
+      const char = letters[(i + drops[i]) % letters.length];
+      ctx.fillText(char, i * fontSize * 1.5, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
         drops[i] = 0;
       }
       drops[i]++;
-    });
+    }
   }
 
-  setInterval(drawMatrix, 150);
+  setInterval(drawMatrix, 200);
 
-  // Gül Yaprağı Efekti
+  // Responsive canvas
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  // Gül yaprakları
   function createPetal() {
     const petal = document.createElement("div");
-    petal.className = "petal";
-    petal.innerText = "🥀";
+    petal.classList.add("petal");
     petal.style.left = Math.random() * window.innerWidth + "px";
+    petal.style.animationDuration = (5 + Math.random() * 5) + "s";
     document.body.appendChild(petal);
-
-    const fall = petal.animate([
-      { transform: `translateY(0px) rotate(0deg)`, opacity: 1 },
-      { transform: `translateY(${window.innerHeight}px) rotate(360deg)`, opacity: 0.5 }
-    ], {
-      duration: 6000 + Math.random() * 3000,
-      iterations: 1,
-      easing: 'ease-in'
-    });
-
-    fall.onfinish = () => petal.remove();
+    setTimeout(() => petal.remove(), 10000);
   }
 
-  setInterval(createPetal, 500);
+  setInterval(createPetal, 300);
 </script>
+
 </body>
 </html>
