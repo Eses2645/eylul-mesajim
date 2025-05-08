@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Eylül İçin Yağmur</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  // Tam ekran ayarı
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  // Yazılacak anlamlı cümleler
+  const messages = [
+    " Eylülüm Seni Çok Seviyorum"
+  ];
+
+  const fontSize = 20;
+  const columns = Math.floor(canvas.width / fontSize);
+
+  // Her sütun bir cümleden bir harf alacak
+  const drops = [];
+  for (let i = 0; i < columns; i++) {
+    const message = messages[Math.floor(Math.random() * messages.length)];
+    drops[i] = {
+      text: message,
+      index: 0,
+      y: Math.random() * canvas.height
+    };
+  }
+
+  function draw() {
+    // Arka planı hafif sil
+    ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#00FF00";
+    ctx.font = `${fontSize}px monospace`;
+
+    for (let i = 0; i < drops.length; i++) {
+      const drop = drops[i];
+      const x = i * fontSize;
+      const y = drop.y;
+
+      const char = drop.text.charAt(drop.index);
+      ctx.fillText(char, x, y);
+
+      drop.y += fontSize;
+      drop.index++;
+
+      // Eğer cümle bitti veya ekran dışına çıktıysa sıfırla
+      if (drop.index >= drop.text.length || drop.y > canvas.height) {
+        const newMessage = messages[Math.floor(Math.random() * messages.length)];
+        drop.text = newMessage;
+        drop.index = 0;
+        drop.y = 0;
+      }
+    }
+  }
+
+  setInterval(draw, 50);
+</script>
+</body>
+</html>
