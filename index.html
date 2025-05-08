@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Eylülüm</title>
+  <title>Eylül'üm</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background-color: black;
-      height: 100%;
       overflow: hidden;
-      font-family: 'Courier New', monospace;
+      background: black;
+      color: lime;
+      height: 100%;
+      font-family: 'Courier New', Courier, monospace;
     }
 
     canvas {
@@ -21,74 +22,98 @@
       z-index: 0;
     }
 
-    .message {
+    .centered-text {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: #FBC02D;
-      font-size: 12vw;
+      top: 30%;
+      width: 100%;
       text-align: center;
-      text-weight: bold;
+      color: white;
+      font-size: 8vw;
+      font-weight: bold;
       z-index: 1;
-      white-space: pre-wrap;
+      text-shadow: 2px 2px 10px #0f0;
     }
 
-    @media (max-width: 600px) {
-      .message {
-        font-size: 10vw;
-      }
+    .button-container {
+      position: absolute;
+      bottom: 50px;
+      width: 100%;
+      text-align: center;
+      z-index: 2;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 1.5rem;
+      background-color: limegreen;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 0 10px lime;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: green;
     }
   </style>
 </head>
 <body>
-  <audio autoplay loop hidden>
-  <source src="sarki.mp3" type="audio/mpeg">
-  Tarayıcınız ses etiketini desteklemiyor.
-</audio>
-  <canvas id="canvas"></canvas>
-  <div class="message">Eylülüm Seni Çok Seviyorum</div>
+  <canvas id="matrix"></canvas>
+
+  <div class="centered-text">Eylül'üm seni çok seviyorum</div>
+
+  <div class="button-container">
+    <button onclick="playMusic()">Müziği Başlat 🎵</button>
+    <audio id="bgMusic" loop>
+      <source src="eylul.mp3" type="audio/mpeg">
+     
+    </audio>
+  </div>
 
   <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
+    // Matrix yağmur efekti
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
 
-    canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
 
-    const phrase = " Eylülüm Seni Çok Seviyorum";
-    const letters = phrase.split('');
-    const fontSize = 24;
-    const columns = Math.floor(canvas.width / fontSize);
+    const letters = Array(256).join("EYLÜL ").split("");
 
-    const drops = Array.from({length: columns}, (_, i) => ({
-      x: i,
-      y: Math.random() * canvas.height / fontSize,
-      index: 0
-    }));
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
 
     function draw() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#00ff88';
+
+      ctx.fillStyle = "#0F0";
       ctx.font = fontSize + "px monospace";
 
-      drops.forEach(drop => {
-        const char = letters[drop.index % letters.length];
-        ctx.fillText(char, drop.x * fontSize, drop.y * fontSize);
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-        drop.y += 1;
-        drop.index++;
-
-        if (drop.y * fontSize > canvas.height) {
-          drop.y = 0;
-          drop.index = 0;
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
         }
-      });
+        drops[i]++;
+      }
     }
 
-    setInterval(draw, 70);
+    setInterval(draw, 33);
 
+    // Müzik oynatma
+    function playMusic() {
+      const audio = document.getElementById("bgMusic");
+      audio.play();
+    }
+
+    // Ekran boyutu değiştiğinde canvas boyutunu güncelle
     window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
