@@ -1,17 +1,18 @@
-lül<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>İyi ki Varsın</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eylül’e Sevgiyle</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: black;
       height: 100%;
-      font-family: 'Courier New', monospace;
+      background: black;
+      color: #ffccdd;
+      font-family: 'Segoe UI', sans-serif;
     }
 
     canvas {
@@ -21,99 +22,115 @@ lül<!DOCTYPE html>
       z-index: 0;
     }
 
-    #main-text {
-      position: absolute;
-      top: -50%;
-      width: 100%;
-      text-align: center;
-      color: #00ff00;
-      font-size: 10vw;
-      font-weight: bold;
-      z-index: 1;
-      animation: dropDown 25s ease-in-out forwards;
-      text-shadow: 2px 2px 12px #0f0;
-    }
-
-    @keyframes dropDown {
-      0% { top: -20%; opacity: 0; }
-      10% { opacity: 1; }
-      100% { top: 40%; opacity: 1; }
-    }
-
-    #startButton {
+    .center-text {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      padding: 20px 40px;
-      font-size: 24px;
-      background-color: #00ff00;
-      color: black;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
+      font-size: 5vw;
+      text-align: center;
+      color: #ff99aa;
+      animation: fadeInText 3s ease-out forwards;
+      z-index: 1;
+    }
+
+    @keyframes fadeInText {
+      0% { opacity: 0; transform: translate(-50%, -60%); }
+      100% { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    .heart {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 90px;
+      background-color: red;
+      clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 50% 80%, 20% 100%, 0% 35%);
+      animation: pulse 1.5s infinite;
       z-index: 2;
-      font-weight: bold;
-      box-shadow: 0 0 15px #00ff00;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.2); }
+    }
+
+    .petal {
+      position: absolute;
+      top: -50px;
+      color: pink;
+      font-size: 1.5em;
+      user-select: none;
+      z-index: 0;
     }
   </style>
 </head>
 <body>
-  <canvas id="matrix"></canvas>
-  <div id="main-text">Eylül'üm Seni Çok Seviyorum</div>
-  <button id="startButton">Başlat</button>
-  <audio id="bgMusic" src="sarki.mp3" preload="auto" loop></audio>
 
-  <script>
-    const canvas = document.getElementById("matrix");
-    const ctx = canvas.getContext("2d");
-    const music = document.getElementById("bgMusic");
-    const startButton = document.getElementById("startButton");
+<canvas id="matrixCanvas"></canvas>
+<div class="center-text">Anneler Günün Kutlu Olsun, Ömerimin Annesi</div>
+<audio autoplay loop>
+  <source src="sarki.mp3" type="audio/mpeg">
+</audio>
+<div class="heart"></div>
 
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
+<script>
+  // Matrix "Anneler Günün Kutlu Olsun" Yağmur
+  const canvas = document.getElementById("matrixCanvas");
+  const ctx = canvas.getContext("2d");
 
-    const phrase = "Anneler Günün Kutlu Olsun, Ömerimin Annesi";
-    const fontSize = 18;
-    const columns = Math.floor(canvas.width / fontSize);
-    const drops = Array(columns).fill(1);
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
 
-    function draw() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const letters = "Anneler Günün Kutlu Olsun".split("");
+  const fontSize = 20;
+  const columns = canvas.width / fontSize;
+  const drops = Array.from({ length: columns }).fill(1);
 
-      ctx.fillStyle = "#0F0";
-      ctx.font = fontSize + "px monospace";
+  function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      for (let i = 0; i < drops.length; i++) {
-        ctx.fillText(phrase, i * fontSize, drops[i] * fontSize);
+    ctx.fillStyle = "#ff66aa";
+    ctx.font = `${fontSize}px monospace`;
 
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
+    drops.forEach((y, i) => {
+      const text = letters[Math.floor(Math.random() * letters.length)];
+      const x = i * fontSize;
+      ctx.fillText(text, x, y * fontSize);
+
+      if (y * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
       }
-    }
-
-    let intervalId;
-
-    function startAnimation() {
-      startButton.style.display = 'none';
-
-      // Müzik başlatma
-      music.play().catch((e) => {
-        alert("Müzik tarayıcı tarafından engellendi. Lütfen sesi açın ve tekrar deneyin.");
-      });
-
-      intervalId = setInterval(draw, 100); // Daha yavaş kayış
-    }
-
-    startButton.addEventListener('click', startAnimation);
-
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      drops[i]++;
     });
-  </script>
+  }
+
+  setInterval(drawMatrix, 150);
+
+  // Gül Yaprağı Efekti
+  function createPetal() {
+    const petal = document.createElement("div");
+    petal.className = "petal";
+    petal.innerText = "🥀";
+    petal.style.left = Math.random() * window.innerWidth + "px";
+    document.body.appendChild(petal);
+
+    const fall = petal.animate([
+      { transform: `translateY(0px) rotate(0deg)`, opacity: 1 },
+      { transform: `translateY(${window.innerHeight}px) rotate(360deg)`, opacity: 0.5 }
+    ], {
+      duration: 6000 + Math.random() * 3000,
+      iterations: 1,
+      easing: 'ease-in'
+    });
+
+    fall.onfinish = () => petal.remove();
+  }
+
+  setInterval(createPetal, 500);
+</script>
 </body>
 </html>
