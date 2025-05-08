@@ -27,10 +27,10 @@
       width: 100%;
       text-align: center;
       color: #00ff00;
-      font-size: 8vw;
+      font-size: 10vw;
       font-weight: bold;
       z-index: 1;
-      animation: dropDown 10s linear forwards;
+      animation: dropDown 25s linear forwards;
       text-shadow: 2px 2px 10px #0f0;
     }
 
@@ -59,9 +59,9 @@
 </head>
 <body>
   <canvas id="matrix"></canvas>
-  <div id="main-text">Eylül'üm Seni Çok Seviyorum</div>
+  <div id="main-text">İyi ki varsın</div>
   <button id="startButton">Başlat</button>
-  <audio id="bgMusic" src="sarki.mp3" loop></audio>
+  <audio id="bgMusic" src="sarki.mp3" preload="auto" loop></audio>
 
   <script>
     const canvas = document.getElementById("matrix");
@@ -78,7 +78,7 @@
     const drops = Array(columns).fill(1);
 
     function draw() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.fillStyle = "#0F0";
@@ -87,7 +87,7 @@
       for (let i = 0; i < drops.length; i++) {
         ctx.fillText(phrase, i * fontSize, drops[i] * fontSize);
 
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.95) {
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
         drops[i]++;
@@ -98,8 +98,13 @@
 
     function startAnimation() {
       startButton.style.display = 'none';
-      music.play();
-      intervalId = setInterval(draw, 50);
+
+      // Müzik başlatma
+      music.play().catch((e) => {
+        alert("Müzik tarayıcı tarafından engellendi. Lütfen sesi açın ve tekrar deneyin.");
+      });
+
+      intervalId = setInterval(draw, 100); // Daha yavaş akış için 100ms
     }
 
     startButton.addEventListener('click', startAnimation);
