@@ -2,74 +2,61 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Eylül İçin Yağmur</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canım Eylül</title>
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
       overflow: hidden;
+      height: 100%;
       background: black;
+      color: #00ff00;
+      font-family: monospace;
     }
     canvas {
       display: block;
+      width: 100vw;
+      height: 100vh;
     }
   </style>
 </head>
 <body>
-<canvas id="canvas"></canvas>
+<canvas id="matrixCanvas"></canvas>
 
 <script>
-  const canvas = document.getElementById("canvas");
+  const canvas = document.getElementById("matrixCanvas");
   const ctx = canvas.getContext("2d");
 
-  // Tam ekran ayarı
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  // Sayfa boyutuna göre canvas ayarla
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
 
-  // Yazılacak anlamlı cümleler
-  const messages = [
-    " Eylülüm Seni Çok Seviyorum"
-  ];
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
   const fontSize = 20;
   const columns = Math.floor(canvas.width / fontSize);
-
-  // Her sütun bir cümleden bir harf alacak
-  const drops = [];
-  for (let i = 0; i < columns; i++) {
-    const message = messages[Math.floor(Math.random() * messages.length)];
-    drops[i] = {
-      text: message,
-      index: 0,
-      y: Math.random() * canvas.height
-    };
-  }
+  const drops = new Array(columns).fill(1);
+  const word = "EYLÜL";
 
   function draw() {
-    // Arka planı hafif sil
-    ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "#00FF00";
+    ctx.fillStyle = "#00ff00";
     ctx.font = `${fontSize}px monospace`;
 
     for (let i = 0; i < drops.length; i++) {
-      const drop = drops[i];
-      const x = i * fontSize;
-      const y = drop.y;
+      const char = word[Math.floor(Math.random() * word.length)];
+      ctx.fillText(char, i * fontSize, drops[i] * fontSize);
 
-      const char = drop.text.charAt(drop.index);
-      ctx.fillText(char, x, y);
-
-      drop.y += fontSize;
-      drop.index++;
-
-      // Eğer cümle bitti veya ekran dışına çıktıysa sıfırla
-      if (drop.index >= drop.text.length || drop.y > canvas.height) {
-        const newMessage = messages[Math.floor(Math.random() * messages.length)];
-        drop.text = newMessage;
-        drop.index = 0;
-        drop.y = 0;
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
       }
+
+      drops[i]++;
     }
   }
 
