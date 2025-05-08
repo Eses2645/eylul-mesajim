@@ -2,135 +2,114 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Anneler Günü</title>
+  <title>Eylül’üm</title>
   <style>
-    body, html {
+    body {
       margin: 0;
-      padding: 0;
-      overflow: hidden;
       background: black;
-      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     canvas {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
-      z-index: 1;
+      z-index: 0;
     }
 
     .message {
-      position: absolute;
-      top: 40%;
+      position: fixed;
+      top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: #ff4f8b;
-      font-size: 6vw;
+      font-size: 4vw;
       text-align: center;
-      z-index: 2;
-      animation: fadeIn 4s ease-in-out;
-      white-space: pre-wrap;
-    }
-
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translate(-50%, -60%); }
-      100% { opacity: 1; transform: translate(-50%, -50%); }
+      color: #ffb6c1;
+      text-shadow: 2px 2px 5px #000;
+      z-index: 1;
+      padding: 0 5vw;
     }
 
     .petal {
-      position: absolute;
+      position: fixed;
       width: 30px;
       height: 30px;
-      background-image: url('https://i.ibb.co/HF3pbTr/rose-petal.png');
-      background-size: cover;
-      z-index: 3;
-      opacity: 0.8;
-      pointer-events: none;
+      background-image: url('IMG_2039.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      z-index: 2;
       animation: fall linear infinite;
     }
 
     @keyframes fall {
-      0% { transform: translateY(-50px) rotate(0deg); opacity: 0; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity: 1; }
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
     }
 
-    .heart {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 3rem;
-      color: red;
-      animation: pulse 2s infinite;
-      z-index: 4;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: translateX(-50%) scale(1); }
-      50% { transform: translateX(-50%) scale(1.3); }
+    audio {
+      display: none;
     }
   </style>
 </head>
 <body>
 
 <canvas id="matrix"></canvas>
-<div class="message">Eylül'üm Seni Çok Seviyorum Canım Aşkım</div>
-<div class="heart">❤️</div>
-<audio autoplay loop>
-  <source src="sarki.mp3" type="audio/mpeg">
-</audio>
+
+<div class="message">Eylül’üm Seni Çok Seviyorum Canım Aşkım</div>
 
 <script>
-  // Matrix yağmur efekti
-  const canvas = document.getElementById("matrix");
-  const ctx = canvas.getContext("2d");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
 
-  const message = "Anneler Günün Kutlu Olsun, Ömerimin Annesi";
-  const letters = message.split("");
-  const fontSize = 20;
-  const columns = Math.floor(canvas.width / (fontSize * 1.5));
-  const drops = Array(columns).fill(1);
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+
+  const letters = "Anneler Günün Kutlu Olsun, Ömerimin Annesi".split("");
+  const fontSize = 16;
+  const columns = canvas.width / fontSize;
+  const drops = Array(Math.floor(columns)).fill(1);
 
   function drawMatrix() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "#0F0";
+    ctx.fillStyle = "#ffb6c1";
     ctx.font = fontSize + "px monospace";
 
     for (let i = 0; i < drops.length; i++) {
-      const char = letters[(i + drops[i]) % letters.length];
-      ctx.fillText(char, i * fontSize * 1.5, drops[i] * fontSize);
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+      const text = letters[i % letters.length];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+      if (Math.random() > 0.975) {
         drops[i] = 0;
       }
       drops[i]++;
     }
   }
 
-  setInterval(drawMatrix, 200);
-
-  // Responsive canvas
-  window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  });
+  setInterval(drawMatrix, 100);
 
   // Gül yaprakları
   function createPetal() {
-    const petal = document.createElement("div");
-    petal.classList.add("petal");
-    petal.style.left = Math.random() * window.innerWidth + "px";
-    petal.style.animationDuration = (5 + Math.random() * 5) + "s";
+    const petal = document.createElement('div');
+    petal.classList.add('petal');
+    petal.style.left = Math.random() * 100 + 'vw';
+    petal.style.animationDuration = 5 + Math.random() * 5 + 's';
     document.body.appendChild(petal);
-    setTimeout(() => petal.remove(), 10000);
+
+    setTimeout(() => {
+      petal.remove();
+    }, 10000);
   }
 
   setInterval(createPetal, 300);
 </script>
+
+<audio autoplay loop>
+  <source src="sarki.mp3" type="audio/mpeg">
+</audio>
 
 </body>
 </html>
