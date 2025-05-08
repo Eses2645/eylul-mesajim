@@ -38,15 +38,36 @@
       0% { top: -10%; }
       100% { top: 40%; }
     }
+
+    #startButton {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px 40px;
+      font-size: 24px;
+      background-color: #00ff00;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      z-index: 2;
+      font-weight: bold;
+      box-shadow: 0 0 15px #00ff00;
+    }
   </style>
 </head>
 <body>
   <canvas id="matrix"></canvas>
-  <div id="main-text">İyi ki varsın</div>
+  <div id="main-text">Eylül'üm Seni Çok Seviyorum</div>
+  <button id="startButton">Başlat</button>
+  <audio id="bgMusic" src="muzik.mp3" loop></audio>
 
   <script>
     const canvas = document.getElementById("matrix");
     const ctx = canvas.getContext("2d");
+    const music = document.getElementById("bgMusic");
+    const startButton = document.getElementById("startButton");
 
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
@@ -73,9 +94,16 @@
       }
     }
 
-    setInterval(draw, 50);
+    let intervalId;
 
-    // Responsive canvas
+    function startAnimation() {
+      startButton.style.display = 'none';
+      music.play();
+      intervalId = setInterval(draw, 50);
+    }
+
+    startButton.addEventListener('click', startAnimation);
+
     window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
