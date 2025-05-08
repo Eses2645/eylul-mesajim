@@ -1,126 +1,129 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Eylül’üm İçin</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: black;
-      height: 100%;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: black;
+      font-family: 'Segoe UI', sans-serif;
     }
 
-    .matrix-text {
+    canvas {
       position: fixed;
       top: 0;
       left: 0;
-      color: rgba(0, 255, 0, 0.1);
-      font-size: 16px;
-      white-space: nowrap;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 1;
+      z-index: 0;
     }
 
-    .center-message {
-      position: absolute;
+    .message {
+      position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: #ff5e9c;
-      font-size: 6vw;
+      color: #ff69b4;
+      font-size: 4vw;
       text-align: center;
-      z-index: 3;
-      font-weight: bold;
-      text-shadow: 0 0 10px #ff5e9c;
+      z-index: 2;
+      text-shadow: 2px 2px 10px #ff1493;
+      max-width: 90%;
     }
 
-    .petal {
+    .heart {
       position: fixed;
-      width: 40px;
-      height: 40px;
-      background-image: url('IMG_2039.png');
-      background-size: contain;
-      background-repeat: no-repeat;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 5vw;
+      animation: pulse 1.5s infinite;
       z-index: 2;
+      color: #ff2e63;
+    }
+
+    @keyframes pulse {
+      0% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.2); }
+      100% { transform: translateX(-50%) scale(1); }
+    }
+
+    .rose {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      z-index: 1;
       animation: fall linear infinite;
-      pointer-events: none;
     }
 
     @keyframes fall {
-      0% {
-        top: -50px;
-        transform: rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        top: 100vh;
-        transform: rotate(360deg);
-        opacity: 0;
-      }
+      0% { transform: translateY(-50px) rotate(0deg); opacity: 0; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 1; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Orta yazı -->
-  <div class="center-message">Eylül’üm Seni Çok Seviyorum Canım Aşkım</div>
+<canvas id="matrixCanvas"></canvas>
 
-  <!-- Matrix tarzı arka plan yazıları -->
-  <div class="matrix-text" id="matrix"></div>
+<div class="message">Eylül’üm Seni Çok Seviyorum Canım Aşkım</div>
+<div class="heart">♥</div>
 
-  <!-- Arka plan müziği -->
-  <audio id="bg-music" loop>
-    <source src="sarki.mp3" type="audio/mpeg">
-  </audio>
+<audio autoplay loop>
+  <source src="sarki.mp3" type="audio/mpeg" />
+  Tarayıcınız ses çalmayı desteklemiyor.
+</audio>
 
-  <script>
-    // Müziği başlat (mobil uyumluluk için tıklamayı bekler)
-    window.addEventListener('click', function () {
-      const music = document.getElementById('bg-music');
-      music.play();
-    }, { once: true });
+<script>
+  // Matrix-style yazı
+  const canvas = document.getElementById("matrixCanvas");
+  const ctx = canvas.getContext("2d");
 
-    // Matrix yazı efekti
-    const matrixEl = document.getElementById('matrix');
-    const columns = Math.floor(window.innerWidth / 20);
-    let drops = Array(columns).fill(0);
-    let texts = Array(columns).fill("Anneler Günün Kutlu Olsun, Ömerimin Annesi");
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
 
-    function drawMatrix() {
-      let output = '';
-      for (let i = 0; i < columns; i++) {
-        const text = texts[i];
-        output += `<span style="position:absolute; left:${i * 20}px; top:${drops[i] * 20}px;">${text}</span>`;
-        drops[i] += 0.5;
-        if (drops[i] * 20 > window.innerHeight && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
+  const text = "Anneler Günün Kutlu Olsun, Ömerimin Annesi".split('');
+  const fontSize = 20;
+  const columns = canvas.width / fontSize;
+  const drops = Array.from({ length: columns }, () => Math.floor(Math.random() * canvas.height / fontSize));
+
+  function draw() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#0F0";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+      const char = text[i % text.length];
+      ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+      if (Math.random() > 0.975) {
+        drops[i] = 0;
       }
-      matrixEl.innerHTML = output;
+      drops[i]++;
     }
-    setInterval(drawMatrix, 100);
+  }
 
-    // Gül yaprakları
-    function createPetal() {
-      const petal = document.createElement("div");
-      petal.className = "petal";
-      petal.style.left = Math.random() * 100 + "vw";
-      petal.style.animationDuration = 5 + Math.random() * 5 + "s";
-      document.body.appendChild(petal);
-      setTimeout(() => {
-        petal.remove();
-      }, 10000);
-    }
+  setInterval(draw, 100);
 
-    setInterval(createPetal, 500);
-  </script>
+  // Gül yaprakları
+  function createRose() {
+    const rose = document.createElement("img");
+    rose.src = "IMG_2039.png";
+    rose.className = "rose";
+    rose.style.left = Math.random() * 100 + "vw";
+    rose.style.animationDuration = (5 + Math.random() * 5) + "s";
+    document.body.appendChild(rose);
+
+    setTimeout(() => {
+      document.body.removeChild(rose);
+    }, 10000);
+  }
+
+  setInterval(createRose, 800);
+</script>
 
 </body>
 </html>
