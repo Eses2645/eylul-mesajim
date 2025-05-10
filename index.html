@@ -111,7 +111,7 @@
 <canvas id="bg-canvas"></canvas>
 
 <div class="content-container">
-  <div id="initial-text" class="main-text">Eylül'üm, Canım Aşkım, Seni Çok Seviyorum</div>
+  <div id="initial-text" class="main-text">Eylül'üm, Canım Aşkım</div>
   <div id="second-text" class="main-text" style="font-size: 2.5em; margin-top: 5px; display: none;">Seni Çok Seviyorum</div>
   <div id="mothers-day-text" class="main-text" style="font-size: 2.5em; margin-top: 15px; display: none;">Anneciğim, seni çok seviyorum</div>
   <div id="mothers-day-text-2" class="main-text" style="font-size: 3em; margin-top: 5px; display: none;">Anneler Günün Kutlu Olsun!</div>
@@ -251,7 +251,7 @@
     document.title = "Anneler Gününe Özel"; // Başlığı da güncelleyelim
   }, 10000); // 10 saniye sonra değiştir
 
-  // Fotoğraflar için divler oluşturma
+  // Fotoğraflar için div oluşturma
   const photoContainer = document.createElement('div');
   photoContainer.style.position = 'fixed';
   photoContainer.style.top = '0';
@@ -262,7 +262,10 @@
   photoContainer.style.zIndex = '1'; // Yaprakların üzerinde, metnin altında
   document.body.appendChild(photoContainer);
 
-  const imageSources = ['img/1.jpeg', 'img/2.jpeg', 'img/3.jpeg', 'img/4.jpeg', 'img/5.jpeg', 'img/6.jpeg', 'img/7.jpeg'', 'img/8.jpeg', 'img/9.jpeg'];
+  const imageSources = [];
+  for (let i = 1; i <= 9; i++) { // 1'den 9'a kadar fotoğraf isimlerini oluştur
+    imageSources.push(`img/${i}.jpeg`);
+  }
   const photos = [];
 
   for (let i = 0; i < imageSources.length; i++) {
