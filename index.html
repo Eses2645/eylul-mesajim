@@ -87,6 +87,23 @@
     @keyframes fadeInPetal {
       to { opacity: 0.7; }
     }
+
+    /* Fotoğraf stilleri */
+    .floating-photo {
+      position: absolute;
+      opacity: 0;
+      filter: blur(10px); /* Başlangıçta flu */
+      transition: opacity 1s ease-in-out, filter 1s ease-in-out;
+      z-index: 1;
+      max-width: 200px; /* İsteğe bağlı maksimum genişlik */
+      max-height: 200px; /* İsteğe bağlı maksimum yükseklik */
+      border-radius: 5px; /* İsteğe bağlı köşe yuvarlaklığı */
+    }
+
+    .floating-photo.visible {
+      opacity: 0.8;
+      filter: blur(0px); /* Netleş */
+    }
   </style>
 </head>
 <body>
@@ -232,7 +249,49 @@
     mothersDayText.style.display = 'block';
     mothersDayText2.style.display = 'block';
     document.title = "Anneler Gününe Özel"; // Başlığı da güncelleyelim
-  }, 10000); // 10 saniye (10000 milisaniye) sonra değiştir
+  }, 10000); // 10 saniye sonra değiştir
+
+  // Fotoğraflar için divler oluşturma
+  const photoContainer = document.createElement('div');
+  photoContainer.style.position = 'fixed';
+  photoContainer.style.top = '0';
+  photoContainer.style.left = '0';
+  photoContainer.style.width = '100%';
+  photoContainer.style.height = '100%';
+  photoContainer.style.pointerEvents = 'none'; // Altındaki öğelere tıklanabilmesi için
+  photoContainer.style.zIndex = '1'; // Yaprakların üzerinde, metnin altında
+  document.body.appendChild(photoContainer);
+
+  const imageSources = ['foto1.jpg', 'foto2.jpg', 'foto3.jpg', 'foto4.jpg', 'foto5.jpg', 'foto6.jpg', 'foto7.jpg', 'foto8.jpg'];
+  const photos = [];
+
+  for (let i = 0; i < imageSources.length; i++) {
+    const img = document.createElement('img');
+    img.src = imageSources[i];
+    img.className = 'floating-photo';
+    photoContainer.appendChild(img);
+    photos.push(img);
+  }
+
+  function animatePhotos() {
+    setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * photos.length);
+      const randomPhoto = photos[randomIndex];
+
+      // Rastgele konum ve boyut
+      randomPhoto.style.left = `${Math.random() * (window.innerWidth - 200)}px`;
+      randomPhoto.style.top = `${Math.random() * (window.innerHeight - 200)}px`;
+      randomPhoto.style.transform = `scale(${0.5 + Math.random() * 0.7})`; // Rastgele boyut
+
+      // Belirip kaybolma
+      randomPhoto.classList.add('visible');
+      setTimeout(() => {
+        randomPhoto.classList.remove('visible');
+      }, 3000); // 3 saniye görünür kal
+    }, 5000); // 5 saniyede bir yeni fotoğraf göster
+  }
+
+  animatePhotos();
 
   // Müzik otomatik oynatma girişimi (Kullanıcı etkileşimi gerekebilir)
   const bgMusic = document.getElementById('bg-music');
