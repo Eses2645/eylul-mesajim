@@ -57,11 +57,14 @@
 
     /* Ortadaki içerik (başlangıçta gizli) */
     .content-container {
-      text-align: center;
-      z-index: 2;
-      opacity: 0;
-      display: none;
-    }
+      text-align: center;
+      z-index: 2;
+      opacity: 0;
+      display: flex; /* Bu satırı aşağıdakiyle değiştirin */
+      flex-direction: column; /* Alt alta sıralama için */
+      align-items: center; /* Yatayda ortalamak için (isteğe bağlı) */
+      /* justify-content: center; /* Dikeyde ortalamak için (isteğe bağlı) */
+    }
 
     @keyframes fadeIn {
       to { opacity: 1; }
