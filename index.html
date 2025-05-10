@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eylül'e Özel</title>
+  <title>Anneler Gününe Özel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
@@ -94,8 +94,10 @@
 <canvas id="bg-canvas"></canvas>
 
 <div class="content-container">
-  <div class="main-text">Eylül'üm, Canım Aşkım</div>
-  <div class="main-text" style="font-size: 2.5em; margin-top: 5px;">Seni Çok Seviyorum</div>
+  <div id="initial-text" class="main-text">Eylül'üm, Canım Aşkım</div>
+  <div id="second-text" class="main-text" style="font-size: 2.5em; margin-top: 5px; display: none;">Seni Çok Seviyorum</div>
+  <div id="mothers-day-text" class="main-text" style="font-size: 2.5em; margin-top: 15px; display: none;">Anneciğim, seni çok seviyorum</div>
+  <div id="mothers-day-text-2" class="main-text" style="font-size: 3em; margin-top: 5px; display: none;">Anneler Günün Kutlu Olsun!</div>
   <div class="heart-icon">❤️</div>
 </div>
 
@@ -218,12 +220,31 @@
     setTimeout(createPetal, i * 500);
   }
 
-  // Müzik otomatik oynatma
+  // Metin değiştirme
+  const initialText = document.getElementById('initial-text');
+  const secondText = document.getElementById('second-text');
+  const mothersDayText = document.getElementById('mothers-day-text');
+  const mothersDayText2 = document.getElementById('mothers-day-text-2');
+
+  setTimeout(() => {
+    initialText.style.display = 'none';
+    secondText.style.display = 'none';
+    mothersDayText.style.display = 'block';
+    mothersDayText2.style.display = 'block';
+    document.title = "Anneler Gününe Özel"; // Başlığı da güncelleyelim
+  }, 10000); // 10 saniye (10000 milisaniye) sonra değiştir
+
+  // Müzik otomatik oynatma girişimi (Kullanıcı etkileşimi gerekebilir)
   const bgMusic = document.getElementById('bg-music');
   bgMusic.play().catch(error => {
     console.error("Müzik otomatik olarak çalınamadı:", error);
     // Kullanıcı etkileşimi gerektiğinde bir mesaj gösterebilirsiniz.
-    // Örneğin: alert("Müziğin çalınması için lütfen sayfaya tıklayın.");
+    // Alternatif olarak, kullanıcı bir yere tıkladığında müziği başlatmayı deneyebilirsiniz:
+    document.addEventListener('click', () => {
+      bgMusic.play().catch(clickError => {
+        console.error("Tıklama sonrası müzik de çalınamadı:", clickError);
+      });
+    }, { once: true }); // Sadece bir kere dinle
   });
 </script>
 
