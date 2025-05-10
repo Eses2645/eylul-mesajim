@@ -61,12 +61,8 @@
       z-index: 2;
       opacity: 0;
       display: none;
-      flex-direction: column; /* Metinleri ve kalbi alt alta sıralar */
-      align-items: center; /* Yatayda ortalar */
-    }
-
-    @keyframes fadeIn {
-      to { opacity: 1; }
+      flex-direction: column;
+      align-items: center;
     }
 
     .main-text {
@@ -75,15 +71,14 @@
       color: #ccffdd;
       text-shadow: 0 0 15px #00ff99;
       margin-bottom: 15px;
-      display: none; /* Başlangıçta tüm metinler gizli */
+      display: none; /* Başlangıçta gizli */
     }
 
     .heart-icon {
       font-size: 5em;
       color: #ff6666;
       animation: beat 1s infinite alternate;
-      display: none; /* Başlangıçta kalp ikonu gizli */
-      margin-top: 20px; /* Metinlerden biraz boşluk bırakır */
+      margin-top: 20px;
     }
 
     @keyframes beat {
@@ -164,9 +159,13 @@
     const mothersDayText2 = document.getElementById('mothers-day-text-2');
     const heartIcon = document.querySelector('.heart-icon');
 
-    // Başlangıçta tüm içerikleri gizle
+    // Başlangıçta tüm içerikleri gizle (ilk metin ve kalp hariç)
     bgCanvas.style.display = 'none';
     contentContainer.style.display = 'none';
+    secondText.style.display = 'none';
+    mothersDayText.style.display = 'none';
+    mothersDayText2.style.display = 'none';
+    heartIcon.style.display = 'none';
     if (bgMusic) bgMusic.volume = 0.5;
 
     // Gül yapraklarını oluştur
@@ -216,10 +215,10 @@
       bgCanvas.style.display = 'block';
       contentContainer.style.display = 'flex';
       contentContainer.style.opacity = 1;
-      fallingPetals.forEach(petal => petal.style.display = 'block');
-      floatingPhotos.forEach(photo => photo.style.display = 'block');
       initialText.style.display = 'block';
       heartIcon.style.display = 'block';
+      fallingPetals.forEach(petal => petal.style.display = 'block');
+      floatingPhotos.forEach(photo => photo.style.display = 'block');
 
       // Yıldız Animasyonu
       const stars = [];
