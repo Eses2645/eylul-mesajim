@@ -4,146 +4,227 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eylül'e Özel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <style>
     /* Genel stil */
     body {
       margin: 0;
       overflow: hidden;
-      background: black;
+      background: linear-gradient(to bottom, #000000, #1a1a1a); /* Daha derin bir siyah geçiş */
       color: #00ff99;
       font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
 
-    canvas {
+    /* Arka plan animasyonu için canvas */
+    #bg-canvas {
       position: fixed;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
       z-index: 0;
     }
 
-    /* Ortadaki yazı ve animasyonu */
-    .center-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    /* Ortadaki içerik */
+    .content-container {
       text-align: center;
       z-index: 2;
+      opacity: 0; /* Başlangıçta görünmez */
+      animation: fadeIn 1s ease-out 0.5s forwards; /* Yavaşça belirme animasyonu */
     }
 
-    .center-text {
-      font-size: 5vw;
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .main-text {
+      font-size: 3.5em; /* Daha okunaklı boyut */
       font-weight: bold;
-      text-shadow: 2px 2px 5px #000;
-      animation: glow 2s infinite alternate;
+      color: #ccffdd; /* Daha yumuşak bir yeşil */
+      text-shadow: 0 0 15px #00ff99; /* Daha belirgin gölge */
+      margin-bottom: 15px;
+      animation: pulseText 2s infinite alternate;
     }
 
-    @keyframes glow {
-      0% { color: #00ff99; text-shadow: 0 0 10px #00ff99; }
-      100% { color: #66ffcc; text-shadow: 0 0 20px #66ffcc; }
-    }
-
-    /* Daha büyük kalp efekti */
-    .heart {
-      font-size: 8vw;
-      color: red;
-      animation: pulse 1.5s infinite alternate;
-    }
-
-    @keyframes pulse {
+    @keyframes pulseText {
       0% { transform: scale(1); }
-      100% { transform: scale(1.2); }
+      100% { transform: scale(1.05); }
     }
 
-    /* Gül yaprakları */
-    .rose {
+    .heart-icon {
+      font-size: 5em; /* Daha büyük kalp */
+      color: #ff6666; /* Daha canlı bir kırmızı */
+      animation: beat 1s infinite alternate;
+    }
+
+    @keyframes beat {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* Zarif gül yaprakları */
+    .falling-petal {
       position: absolute;
-      width: 40px;
-      height: 40px;
-      background-image: url('IMG_2039.png');
-      background-size: cover;
-      animation: fall linear infinite;
+      width: 30px;
+      height: auto; /* Oranı koru */
       z-index: 1;
-      opacity: 0.8;
+      opacity: 0; /* Başlangıçta görünmez */
+      animation: fallPetal 8s linear infinite, fadeInPetal 1s ease-in forwards;
     }
 
-    @keyframes fall {
-      0% { top: -50px; transform: rotate(0deg); opacity: 1; }
-      100% { top: 100vh; transform: rotate(360deg); opacity: 0; }
+    @keyframes fallPetal {
+      0% { top: -50px; transform: translateX(0) rotate(0deg); }
+      100% { top: 110vh; transform: translateX(20px) rotate(360deg); }
+    }
+
+    @keyframes fadeInPetal {
+      to { opacity: 0.7; }
     }
   </style>
 </head>
 <body>
 
-<canvas id="matrix"></canvas>
+<canvas id="bg-canvas"></canvas>
 
-<div class="center-container">
-  <div class="center-text">Eylül’üm Seni Çok Seviyorum Canım Aşkım</div>
-  <div class="heart">❤️</div>
+<div class="content-container">
+  <div class="main-text">Eylül'üm, Canım Aşkım</div>
+  <div class="main-text" style="font-size: 2.5em; margin-top: 5px;">Seni Çok Seviyorum</div>
+  <div class="heart-icon">❤️</div>
 </div>
 
 <audio id="bg-music" src="sarki.mp3" loop></audio>
 
 <script>
-  // Matrix yağmur efekti (Yavaşlatılmış versiyon)
-  const canvas = document.getElementById('matrix');
-  const ctx = canvas.getContext('2d');
-  canvas.height = window.innerHeight;
-  canvas.width = window.innerWidth;
+  const bgCanvas = document.getElementById('bg-canvas');
+  const bgCtx = bgCanvas.getContext('2d');
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
 
-  const letters = 'ANNELERGÜNÜNKUTLUOLSUNÖMERİMANNESİ';
-  const fontSize = 20; // Daha büyük font
-  const columns = canvas.width / fontSize;
-  const drops = [];
+  const stars = [];
+  const numStars = 200;
+  const starColor = '#ffffff';
+  const trailColor = 'rgba(255, 255, 255, 0.1)';
+  const gravity = 0.05;
+  const friction = 0.98;
 
-  for (let i = 0; i < columns; i++) {
-    drops[i] = 1;
-  }
+  class Star {
+    constructor(x, y, radius, velocityY) {
+      this.x = x;
+      this.y = y;
+      this.radius = radius;
+      this.velocityY = velocityY;
+      this.trail = [];
+      this.trailLength = 10;
+    }
 
-  function draw() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'; // Hafif bir karartma ile akışı netleştirme
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#0F0';
-    ctx.font = fontSize + 'px monospace';
+    update() {
+      this.velocityY += gravity;
+      this.y += this.velocityY;
+      this.x += Math.random() - 0.5; // Hafifçe sağa sola hareket
 
-    for (let i = 0; i < drops.length; i++) {
-      const text = letters.charAt(Math.floor(Math.random() * letters.length));
-      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-      // Akışın hızını düşürmek için daha uzun duraklatma oranı
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.98) {
-        drops[i] = 0;
+      this.trail.push({ x: this.x, y: this.y });
+      while (this.trail.length > this.trailLength) {
+        this.trail.shift();
       }
-      drops[i] += 0.5; // Yazıların daha yavaş hareket etmesi için düşüş hızını azalttık
+
+      if (this.y > bgCanvas.height + this.radius) {
+        this.y = -this.radius;
+        this.x = Math.random() * bgCanvas.width;
+        this.velocityY = 0;
+        this.trail = [];
+      }
+    }
+
+    draw() {
+      bgCtx.beginPath();
+      bgCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      bgCtx.fillStyle = starColor;
+      bgCtx.shadowColor = starColor;
+      bgCtx.shadowBlur = 5;
+      bgCtx.fill();
+      bgCtx.closePath();
+
+      // Kuyruk çizimi
+      for (let i = 0; i < this.trail.length; i++) {
+        const point = this.trail[i];
+        const opacity = (i + 1) / this.trail.length * 0.8;
+        const size = this.radius * (i + 1) / this.trail.length;
+        bgCtx.beginPath();
+        bgCtx.arc(point.x, point.y, size, 0, Math.PI * 2);
+        bgCtx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+        bgCtx.shadowColor = `rgba(255, 255, 255, ${opacity})`;
+        bgCtx.shadowBlur = 2;
+        bgCtx.fill();
+        bgCtx.closePath();
+      }
     }
   }
 
-  setInterval(draw, 100); // Yenileme hızını düşürdük (Önceki: 33, Şimdi: 100)
-
-  // Gül yaprakları
-  for (let i = 0; i < 20; i++) {
-    let rose = document.createElement("div");
-    rose.className = "rose";
-    rose.style.left = Math.random() * window.innerWidth + "px";
-    rose.style.animationDuration = 5 + Math.random() * 10 + "s";
-    document.body.appendChild(rose);
+  function initStars() {
+    for (let i = 0; i < numStars; i++) {
+      const x = Math.random() * bgCanvas.width;
+      const y = Math.random() * bgCanvas.height;
+      const radius = Math.random() * 2 + 1;
+      const velocityY = Math.random() * 0.5 + 0.1;
+      stars.push(new Star(x, y, radius, velocityY));
+    }
   }
 
-  // Müzik otomatik oynatma (Tarayıcı izin vermezse dokunma gerektirebilir)
-  document.addEventListener("click", () => {
-    const audio = document.getElementById('bg-music');
-    audio.play().catch(error => {
-      console.log('Otomatik oynatma engellendi:', error);
+  function animateStars() {
+    requestAnimationFrame(animateStars);
+    bgCtx.fillStyle = 'rgba(0, 0, 0, 0.7)'; // Daha belirgin kuyruk için arka planı biraz daha koyulaştır
+    bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+    stars.forEach(star => {
+      star.update();
+      star.draw();
     });
-  });
+  }
 
-  // Alternatif çözüm: Kullanıcı sayfaya girdikten birkaç saniye sonra müziği başlatmayı deniyoruz.
-  setTimeout(() => {
-    const audio = document.getElementById('bg-music');
-    audio.play().catch(error => {
-      console.log('Sessiz modda olabilir, dokunma gerekli.');
+  initStars();
+  animateStars();
+
+  // Zarif gül yaprakları
+  function createPetal() {
+    const petal = document.createElement("img");
+    petal.src = "IMG_2039.png"; // Gül yaprağı resminizin yolu
+    petal.className = "falling-petal";
+    const startPosition = Math.random() * window.innerWidth;
+    const animationDuration = 8 + Math.random() * 6;
+    const delay = Math.random() * 2;
+
+    petal.style.left = `${startPosition}px`;
+    petal.style.animationDuration = `${animationDuration}s`;
+    petal.style.animationDelay = `${delay}s`;
+    petal.style.transform = `rotate(${Math.random() * 360}deg)`; // Rastgele dönüş
+
+    document.body.appendChild(petal);
+
+    // Yaprak animasyonu bittikten sonra kaldır
+    petal.addEventListener('animationend', () => {
+      petal.remove();
+      setTimeout(createPetal, 500 + Math.random() * 1500); // Yeni yaprak oluşturma aralığı
     });
-  }, 3000); // 3 saniye gecikmeli başlatma denemesi
+  }
+
+  // Başlangıçta birkaç yaprak oluştur
+  for (let i = 0; i < 10; i++) {
+    setTimeout(createPetal, i * 500);
+  }
+
+  // Müzik otomatik oynatma
+  const bgMusic = document.getElementById('bg-music');
+  bgMusic.play().catch(error => {
+    console.error("Müzik otomatik olarak çalınamadı:", error);
+    // Kullanıcı etkileşimi gerektiğinde bir mesaj gösterebilirsiniz.
+    // Örneğin: alert("Müziğin çalınması için lütfen sayfaya tıklayın.");
+  });
 </script>
 
 </body>
