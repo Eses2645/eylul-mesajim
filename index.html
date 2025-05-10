@@ -57,14 +57,13 @@
 
     /* Ortadaki içerik (başlangıçta gizli) */
     .content-container {
-      text-align: center;
-      z-index: 2;
-      opacity: 0;
-      display: flex; /* Bu satırı aşağıdakiyle değiştirin */
-      flex-direction: column; /* Alt alta sıralama için */
-      align-items: center; /* Yatayda ortalamak için (isteğe bağlı) */
-      /* justify-content: center; /* Dikeyde ortalamak için (isteğe bağlı) */
-    }
+      text-align: center;
+      z-index: 2;
+      opacity: 0;
+      display: none;
+      flex-direction: column; /* Metinleri ve kalbi alt alta sıralar */
+      align-items: center; /* Yatayda ortalar */
+    }
 
     @keyframes fadeIn {
       to { opacity: 1; }
@@ -84,6 +83,7 @@
       color: #ff6666;
       animation: beat 1s infinite alternate;
       display: none; /* Başlangıçta kalp ikonu gizli */
+      margin-top: 20px; /* Metinlerden biraz boşluk bırakır */
     }
 
     @keyframes beat {
@@ -168,8 +168,6 @@
     bgCanvas.style.display = 'none';
     contentContainer.style.display = 'none';
     if (bgMusic) bgMusic.volume = 0.5;
-    initialText.style.display = 'block'; // İlk metin başta görünür
-    heartIcon.style.display = 'block';   // Kalp ikonu başta görünür
 
     // Gül yapraklarını oluştur
     for (let i = 0; i < 15; i++) {
@@ -216,10 +214,12 @@
       if (startButtonContainer) startButtonContainer.style.display = 'none';
 
       bgCanvas.style.display = 'block';
-      contentContainer.style.display = 'flex'; // Ya da block, tercihinize göre
+      contentContainer.style.display = 'flex';
       contentContainer.style.opacity = 1;
       fallingPetals.forEach(petal => petal.style.display = 'block');
       floatingPhotos.forEach(photo => photo.style.display = 'block');
+      initialText.style.display = 'block';
+      heartIcon.style.display = 'block';
 
       // Yıldız Animasyonu
       const stars = [];
