@@ -21,35 +21,27 @@
       min-height: 100vh;
     }
 
-    /* Başlat menüsü */
-    .start-menu {
+    /* Başlat butonu */
+    .start-button-container {
       text-align: center;
       z-index: 3; /* Diğer her şeyin üzerinde */
     }
 
-    .start-button {
+    #start-button {
       background-color: rgba(0, 255, 153, 0.8);
       color: #1a1a1a;
       font-family: 'Poppins', sans-serif;
       font-weight: bold;
-      font-size: 1.5em;
-      padding: 15px 30px;
+      font-size: 2em; /* Biraz daha büyük */
+      padding: 20px 40px; /* Biraz daha büyük */
       border: none;
       border-radius: 10px;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
 
-    .start-button:hover {
+    #start-button:hover {
       background-color: rgba(0, 255, 153, 1);
-    }
-
-    .start-title {
-      font-size: 2.5em;
-      font-weight: bold;
-      color: #ccffdd;
-      text-shadow: 0 0 10px #00ff99;
-      margin-bottom: 30px;
     }
 
     /* Arka plan için canvas (başlangıçta gizli) */
@@ -142,9 +134,8 @@
 </head>
 <body>
 
-  <div class="start-menu">
-    <div class="start-title">Anneler Gününe Özel</div>
-    <button id="start-button" class="start-button">Başlat</button>
+  <div class="start-button-container">
+    <button id="start-button">Başlat</button>
   </div>
 
   <canvas id="bg-canvas"></canvas>
@@ -161,27 +152,30 @@
 
   <script>
     const startButton = document.getElementById('start-button');
-    const startMenu = document.querySelector('.start-menu');
+    const startButtonContainer = document.querySelector('.start-button-container');
     const bgCanvas = document.getElementById('bg-canvas');
     const contentContainer = document.querySelector('.content-container');
+    const bgMusic = document.getElementById('bg-music');
     const fallingPetals = document.querySelectorAll('.falling-petal');
     const floatingPhotos = document.querySelectorAll('.floating-photo');
-    const bgMusic = document.getElementById('bg-music');
 
     // Başlangıçta tüm içerikleri gizle
     bgCanvas.style.display = 'none';
     contentContainer.style.display = 'none';
+    bgMusic.volume = 0.5; // İsteğe bağlı başlangıç ses seviyesi
     fallingPetals.forEach(petal => petal.style.display = 'none');
     floatingPhotos.forEach(photo => photo.style.display = 'none');
 
-    // Başlat butonuna tıklanınca içeriği göster ve animasyonları başlat
     startButton.addEventListener('click', () => {
-      startMenu.style.display = 'none';
+      // Başlat butonunu ve konteynerini kaldır
+      startButtonContainer.style.display = 'none';
+
+      // Diğer içerikleri göster
       bgCanvas.style.display = 'block';
-      contentContainer.style.display = 'flex'; // flex olarak ayarla ki ortadaki divler ortalansın
+      contentContainer.style.display = 'flex';
+      contentContainer.style.opacity = 1;
       fallingPetals.forEach(petal => petal.style.display = 'block');
       floatingPhotos.forEach(photo => photo.style.display = 'block');
-      contentContainer.style.opacity = 1; // Ana içeriğin görünürlüğünü sağla
 
       // Yıldız animasyonunu başlat
       const stars = [];
@@ -229,8 +223,6 @@
       initStars();
       animateStars();
 
-      // Gül yaprakları (zaten HTML'de oluşturuluyor, sadece görünür yapıldı)
-
       // Fotoğraf animasyonunu başlat
       function animatePhotos() {
         setInterval(() => {
@@ -253,62 +245,7 @@
       bgMusic.play().catch(error => {
         console.error("Müzik başlatılamadı:", error);
       });
-    });
-
-    // Gül yapraklarını başlangıçta oluştur
-    for (let i = 0; i < 15; i++) {
-      const petal = document.createElement("img");
-      petal.src = "IMG_2039.png";
-      petal.className = "falling-petal";
-      petal.style.left = Math.random() * window.innerWidth + "px";
-      petal.style.animationDuration = 5 + Math.random() * 10 + "s";
-      petal.style.transform = `rotate(${Math.random() * 360}deg)`;
-      document.body.appendChild(petal);
-      petal.style.display = 'none'; // Başlangıçta gizli
-      petal.addEventListener('animationend', () => {
-        petal.remove();
-      });
-    }
-
-    // Fotoğrafları başlangıçta oluştur
-    const photoContainer = document.createElement('div');
-    photoContainer.style.position = 'fixed';
-    photoContainer.style.top = '0';
-    photoContainer.style.left = '0';
-    photoContainer.style.width = '100%';
-    photoContainer.style.height = '100%';
-    photoContainer.style.pointerEvents = 'none';
-    photoContainer.style.zIndex = '1';
-    document.body.appendChild(photoContainer);
-
-    const imageSources = [];
-    for (let i = 1; i <= 8; i++) {
-      imageSources.push(`img/${i}.jpeg`);
-    }
-    const photos = [];
-
-    for (let i = 0; i < imageSources.length; i++) {
-      const img = document.createElement('img');
-      img.src = imageSources[i];
-      img.className = 'floating-photo';
-      img.style.display = 'none'; // Başlangıçta gizli
-      photoContainer.appendChild(img);
-      photos.push(img);
-    }
-
-    // Metin Değiştirme (başlat butonundan sonra çalışacak)
-    const initialText = document.getElementById('initial-text');
-    const secondText = document.getElementById('second-text');
-    const mothersDayText = document.getElementById('mothers-day-text');
-    const mothersDayText2 = document.getElementById('mothers-day-text-2');
-
-    setTimeout(() => {
-      initialText.style.display = 'none';
-      secondText.style.display = 'none';
-      mothersDayText.style.display = 'block';
-      mothersDayText2.style.display = 'block';
-      document.title = "Anneler Gününe Özel";
-    }, 10000);
+    }, { once: true }); // Sadece bir kere çalışması için
   </script>
 
 </body>
