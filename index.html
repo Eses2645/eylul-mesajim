@@ -1,135 +1,127 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Eylül’üm İçin</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eylül'e Özel</title>
   <style>
-    html, body {
+    /* Matrix yağmur stili */
+    body {
       margin: 0;
-      padding: 0;
       overflow: hidden;
       background: black;
-      color: #00FF00;
-      font-family: monospace;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
     }
 
     canvas {
-      display: block;
       position: fixed;
       top: 0;
       left: 0;
       z-index: 0;
     }
 
+    /* Ortadaki yazı */
     .center-text {
       position: absolute;
-      top: 30%;
-      width: 100%;
-      text-align: center;
-      font-size: 3em;
-      color: #00ff99;
-      z-index: 1;
-      text-shadow: 0 0 10px #00FF00;
-    }
-
-    .heart {
-      position: absolute;
-      bottom: 20px;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      font-size: 60px;
-      color: red;
+      transform: translate(-50%, -50%);
+      font-size: 6vw;
+      color: #00ff99;
+      text-align: center;
       z-index: 2;
-      animation: pulse 1s infinite;
+      text-shadow: 2px 2px 5px #000;
     }
 
-    @keyframes pulse {
-      0% { transform: translateX(-50%) scale(1); }
-      50% { transform: translateX(-50%) scale(1.2); }
-      100% { transform: translateX(-50%) scale(1); }
-    }
-
+    /* Gül yaprakları */
     .rose {
       position: absolute;
-      top: 0;
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       background-image: url('IMG_2039.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      animation: fall 10s linear infinite;
-      z-index: 2;
+      background-size: cover;
+      animation: fall linear infinite;
+      z-index: 1;
+      opacity: 0.8;
     }
 
     @keyframes fall {
       0% {
-        transform: translateY(-100px);
+        top: -50px;
+        transform: rotate(0deg);
         opacity: 1;
       }
       100% {
-        transform: translateY(100vh);
+        top: 100vh;
+        transform: rotate(360deg);
         opacity: 0;
       }
     }
   </style>
 </head>
 <body>
-  <canvas id="matrix"></canvas>
 
-  <div class="center-text">Eylül’üm Seni Çok Seviyorum Canım Aşkım</div>
-  <div class="heart">❤</div>
+<canvas id="matrix"></canvas>
 
-  <!-- 10 adet gül yaprağı -->
-  <script>
-    for (let i = 0; i < 10; i++) {
-      let rose = document.createElement("div");
-      rose.className = "rose";
-      rose.style.left = Math.random() * window.innerWidth + "px";
-      rose.style.animationDuration = 5 + Math.random() * 10 + "s";
-      document.body.appendChild(rose);
-    }
-  </script>
+<div class="center-text">Eylül’üm Seni Çok Seviyorum Canım Aşkım</div>
 
-  <!-- Müzik -->
-  <audio autoplay loop>
-    <source src="sarki.mp3" type="audio/mpeg">
-    Tarayıcınız audio elementini desteklemiyor.
-  </audio>
+<audio id="bg-music" src="sarki.mp3" autoplay loop></audio>
 
-  <!-- Matrix Yağmur Efekti -->
-  <script>
-    const canvas = document.getElementById("matrix");
-    const ctx = canvas.getContext("2d");
+<script>
+  // Matrix yağmur efekti
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
 
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
+  const letters = 'ANNELERGÜNÜNKUTLUOLSUNÖMERİMANNESİ';
+  const fontSize = 16;
+  const columns = canvas.width / fontSize;
+  const drops = [];
 
-    const letters = "ANNELERGÜNÜNKUTLUOLSUNÖMERİMANNE".split("");
-    const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const drops = [];
+  for (let i = 0; i < columns; i++) {
+    drops[i] = 1;
+  }
 
-    for (let x = 0; x < columns; x++) {
-      drops[x] = 1;
-    }
+  function draw() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#0F0';
+    ctx.font = fontSize + 'px monospace';
 
-    function draw() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#0F0";
-      ctx.font = fontSize + "px monospace";
-
-      for (let i = 0; i < drops.length; i++) {
-        const text = letters[Math.floor(Math.random() * letters.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
+    for (let i = 0; i < drops.length; i++) {
+      const text = letters.charAt(Math.floor(Math.random() * letters.length));
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
       }
+      drops[i]++;
     }
+  }
 
-    setInterval(draw, 50);
-  </script>
+  setInterval(draw, 33);
+
+  // Gül yaprakları
+  for (let i = 0; i < 20; i++) {
+    let rose = document.createElement("div");
+    rose.className = "rose";
+    rose.style.left = Math.random() * window.innerWidth + "px";
+    rose.style.animationDuration = 5 + Math.random() * 10 + "s";
+    document.body.appendChild(rose);
+  }
+
+  // Müzik otomatik oynatma (bazı tarayıcılar engelleyebilir)
+  window.addEventListener('load', () => {
+    const audio = document.getElementById('bg-music');
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(error => {
+        console.log('Otomatik oynatma engellendi:', error);
+      });
+    }
+  });
+</script>
+
 </body>
 </html>
