@@ -12,7 +12,7 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: linear-gradient(to bottom, #000000, #1a1a1a); /* Daha derin bir siyah geçiş */
+      background: linear-gradient(to bottom, #000000, #1a1a1a);
       color: #00ff99;
       font-family: 'Poppins', sans-serif;
       display: flex;
@@ -21,7 +21,7 @@
       min-height: 100vh;
     }
 
-    /* Arka plan animasyonu için canvas */
+    /* Arka plan için canvas */
     #bg-canvas {
       position: fixed;
       top: 0;
@@ -35,8 +35,8 @@
     .content-container {
       text-align: center;
       z-index: 2;
-      opacity: 0; /* Başlangıçta görünmez */
-      animation: fadeIn 1s ease-out 0.5s forwards; /* Yavaşça belirme animasyonu */
+      opacity: 0;
+      animation: fadeIn 1s ease-out 0.5s forwards;
     }
 
     @keyframes fadeIn {
@@ -44,10 +44,10 @@
     }
 
     .main-text {
-      font-size: 3.5em; /* Daha okunaklı boyut */
+      font-size: 3.5em;
       font-weight: bold;
-      color: #ccffdd; /* Daha yumuşak bir yeşil */
-      text-shadow: 0 0 15px #00ff99; /* Daha belirgin gölge */
+      color: #ccffdd;
+      text-shadow: 0 0 15px #00ff99;
       margin-bottom: 15px;
       animation: pulseText 2s infinite alternate;
     }
@@ -58,8 +58,8 @@
     }
 
     .heart-icon {
-      font-size: 5em; /* Daha büyük kalp */
-      color: #ff6666; /* Daha canlı bir kırmızı */
+      font-size: 5em;
+      color: #ff6666;
       animation: beat 1s infinite alternate;
     }
 
@@ -69,13 +69,13 @@
       100% { transform: scale(1); }
     }
 
-    /* Zarif gül yaprakları */
+    /* Gül yaprakları */
     .falling-petal {
       position: absolute;
       width: 30px;
-      height: auto; /* Oranı koru */
+      height: auto;
       z-index: 1;
-      opacity: 0; /* Başlangıçta görünmez */
+      opacity: 0;
       animation: fallPetal 8s linear infinite, fadeInPetal 1s ease-in forwards;
     }
 
@@ -92,17 +92,17 @@
     .floating-photo {
       position: absolute;
       opacity: 0;
-      filter: blur(10px); /* Başlangıçta flu */
+      filter: blur(10px);
       transition: opacity 1s ease-in-out, filter 1s ease-in-out;
       z-index: 1;
-      max-width: 200px; /* İsteğe bağlı maksimum genişlik */
-      max-height: 200px; /* İsteğe bağlı maksimum yükseklik */
-      border-radius: 5px; /* İsteğe bağlı köşe yuvarlaklığı */
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 5px;
     }
 
     .floating-photo.visible {
       opacity: 0.8;
-      filter: blur(0px); /* Netleş */
+      filter: blur(0px);
     }
   </style>
 </head>
@@ -121,123 +121,71 @@
 <audio id="bg-music" src="sarki.mp3" loop></audio>
 
 <script>
+  // Canvas Arka Plan Animasyonu (Yıldızlar)
   const bgCanvas = document.getElementById('bg-canvas');
   const bgCtx = bgCanvas.getContext('2d');
   bgCanvas.width = window.innerWidth;
   bgCanvas.height = window.innerHeight;
-
   const stars = [];
   const numStars = 200;
   const starColor = '#ffffff';
-  const trailColor = 'rgba(255, 255, 255, 0.1)';
-  const gravity = 0.05;
-  const friction = 0.98;
-
   class Star {
-    constructor(x, y, radius, velocityY) {
+    constructor(x, y, radius) {
       this.x = x;
       this.y = y;
       this.radius = radius;
-      this.velocityY = velocityY;
-      this.trail = [];
-      this.trailLength = 10;
+      this.velocityY = 0.1 + Math.random() * 0.5;
     }
-
     update() {
-      this.velocityY += gravity;
       this.y += this.velocityY;
-      this.x += Math.random() - 0.5; // Hafifçe sağa sola hareket
-
-      this.trail.push({ x: this.x, y: this.y });
-      while (this.trail.length > this.trailLength) {
-        this.trail.shift();
-      }
-
       if (this.y > bgCanvas.height + this.radius) {
         this.y = -this.radius;
         this.x = Math.random() * bgCanvas.width;
-        this.velocityY = 0;
-        this.trail = [];
       }
     }
-
     draw() {
       bgCtx.beginPath();
       bgCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
       bgCtx.fillStyle = starColor;
-      bgCtx.shadowColor = starColor;
-      bgCtx.shadowBlur = 5;
       bgCtx.fill();
       bgCtx.closePath();
-
-      // Kuyruk çizimi
-      for (let i = 0; i < this.trail.length; i++) {
-        const point = this.trail[i];
-        const opacity = (i + 1) / this.trail.length * 0.8;
-        const size = this.radius * (i + 1) / this.trail.length;
-        bgCtx.beginPath();
-        bgCtx.arc(point.x, point.y, size, 0, Math.PI * 2);
-        bgCtx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-        bgCtx.shadowColor = `rgba(255, 255, 255, ${opacity})`;
-        bgCtx.shadowBlur = 2;
-        bgCtx.fill();
-        bgCtx.closePath();
-      }
     }
   }
-
   function initStars() {
     for (let i = 0; i < numStars; i++) {
       const x = Math.random() * bgCanvas.width;
       const y = Math.random() * bgCanvas.height;
       const radius = Math.random() * 2 + 1;
-      const velocityY = Math.random() * 0.5 + 0.1;
-      stars.push(new Star(x, y, radius, velocityY));
+      stars.push(new Star(x, y, radius));
     }
   }
-
   function animateStars() {
     requestAnimationFrame(animateStars);
-    bgCtx.fillStyle = 'rgba(0, 0, 0, 0.7)'; // Daha belirgin kuyruk için arka planı biraz daha koyulaştır
+    bgCtx.fillStyle = 'rgba(0, 0, 0, 0.8)';
     bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
     stars.forEach(star => {
       star.update();
       star.draw();
     });
   }
-
   initStars();
   animateStars();
 
-  // Zarif gül yaprakları
-  function createPetal() {
+  // Gül Yaprakları
+  for (let i = 0; i < 15; i++) {
     const petal = document.createElement("img");
-    petal.src = "IMG_2039.png"; // Gül yaprağı resminizin yolu
+    petal.src = "IMG_2039.png";
     petal.className = "falling-petal";
-    const startPosition = Math.random() * window.innerWidth;
-    const animationDuration = 8 + Math.random() * 6;
-    const delay = Math.random() * 2;
-
-    petal.style.left = `${startPosition}px`;
-    petal.style.animationDuration = `${animationDuration}s`;
-    petal.style.animationDelay = `${delay}s`;
-    petal.style.transform = `rotate(${Math.random() * 360}deg)`; // Rastgele dönüş
-
+    petal.style.left = Math.random() * window.innerWidth + "px";
+    petal.style.animationDuration = 5 + Math.random() * 10 + "s";
+    petal.style.transform = `rotate(${Math.random() * 360}deg)`;
     document.body.appendChild(petal);
-
-    // Yaprak animasyonu bittikten sonra kaldır
     petal.addEventListener('animationend', () => {
       petal.remove();
-      setTimeout(createPetal, 500 + Math.random() * 1500); // Yeni yaprak oluşturma aralığı
     });
   }
 
-  // Başlangıçta birkaç yaprak oluştur
-  for (let i = 0; i < 10; i++) {
-    setTimeout(createPetal, i * 500);
-  }
-
-  // Metin değiştirme
+  // Metin Değiştirme
   const initialText = document.getElementById('initial-text');
   const secondText = document.getElementById('second-text');
   const mothersDayText = document.getElementById('mothers-day-text');
@@ -248,22 +196,22 @@
     secondText.style.display = 'none';
     mothersDayText.style.display = 'block';
     mothersDayText2.style.display = 'block';
-    document.title = "Anneler Gününe Özel"; // Başlığı da güncelleyelim
-  }, 10000); // 10 saniye sonra değiştir
+    document.title = "Anneler Gününe Özel";
+  }, 10000);
 
-  // Fotoğraflar için div oluşturma
+  // Fotoğrafları Ekleme ve Animasyonu
   const photoContainer = document.createElement('div');
   photoContainer.style.position = 'fixed';
   photoContainer.style.top = '0';
   photoContainer.style.left = '0';
   photoContainer.style.width = '100%';
   photoContainer.style.height = '100%';
-  photoContainer.style.pointerEvents = 'none'; // Altındaki öğelere tıklanabilmesi için
-  photoContainer.style.zIndex = '1'; // Yaprakların üzerinde, metnin altında
+  photoContainer.style.pointerEvents = 'none';
+  photoContainer.style.zIndex = '1';
   document.body.appendChild(photoContainer);
 
   const imageSources = [];
-  for (let i = 1; i <= 9; i++) { // 1'den 9'a kadar fotoğraf isimlerini oluştur
+  for (let i = 1; i <= 8; i++) { // Toplam 8 fotoğraf
     imageSources.push(`img/${i}.jpeg`);
   }
   const photos = [];
@@ -281,32 +229,28 @@
       const randomIndex = Math.floor(Math.random() * photos.length);
       const randomPhoto = photos[randomIndex];
 
-      // Rastgele konum ve boyut
       randomPhoto.style.left = `${Math.random() * (window.innerWidth - 200)}px`;
       randomPhoto.style.top = `${Math.random() * (window.innerHeight - 200)}px`;
-      randomPhoto.style.transform = `scale(${0.5 + Math.random() * 0.7})`; // Rastgele boyut
+      randomPhoto.style.transform = `scale(${0.5 + Math.random() * 0.7})`;
 
-      // Belirip kaybolma
       randomPhoto.classList.add('visible');
       setTimeout(() => {
         randomPhoto.classList.remove('visible');
-      }, 3000); // 3 saniye görünür kal
-    }, 5000); // 5 saniyede bir yeni fotoğraf göster
+      }, 3000);
+    }, 5000);
   }
 
   animatePhotos();
 
-  // Müzik otomatik oynatma girişimi (Kullanıcı etkileşimi gerekebilir)
+  // Müzik Otomatik Oynatma
   const bgMusic = document.getElementById('bg-music');
   bgMusic.play().catch(error => {
     console.error("Müzik otomatik olarak çalınamadı:", error);
-    // Kullanıcı etkileşimi gerektiğinde bir mesaj gösterebilirsiniz.
-    // Alternatif olarak, kullanıcı bir yere tıkladığında müziği başlatmayı deneyebilirsiniz:
     document.addEventListener('click', () => {
       bgMusic.play().catch(clickError => {
         console.error("Tıklama sonrası müzik de çalınamadı:", clickError);
       });
-    }, { once: true }); // Sadece bir kere dinle
+    }, { once: true });
   });
 </script>
 
