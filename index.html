@@ -116,7 +116,7 @@
       z-index: 0; /* Yazının arkasında görünmesi için */
       max-width: 200px;
       max-height: 200px;
-      border-radius: 5px;
+      border-radius: 50%; /* Yuvarlak çerçeve */
       display: none;
     }
 
@@ -139,6 +139,7 @@
     <div id="second-text" class="main-text">Seni Çok Seviyorum</div>
     <div id="mothers-day-text" class="main-text">Anneciğim, seni çok seviyorum</div>
     <div id="mothers-day-text-2" class="main-text">Anneler Günün Kutlu Olsun!</div>
+    <div id="final-text" class="main-text" style="display: none; font-size: 4em; color: #ffffcc; text-shadow: 0 0 20px #00ff99;">İyi ki varsın</div>
     <div class="heart-icon">❤️</div>
   </div>
 
@@ -161,6 +162,9 @@
     const numStars = 200;
     const stars = [];
     const starColor = '#ffffff';
+    let animationFrameId; // Animasyon döngüsünün ID'sini saklayacak
+    let photoIntervalId;   // Fotoğraf animasyonunun interval ID'sini saklayacak
+    const final टेक्स्ट = document.getElementById('final-text');
 
     class Star {
       constructor(x, y, radius, speed) {
@@ -204,14 +208,14 @@
       for (let i = 0; i < numStars; i++) {
         const x = Math.random() * bgCanvas.width;
         const y = Math.random() * -bgCanvas.height * Math.random(); // Ekranın üstünden başla
-        const radius = Math.random() * 0.6 + 0.1; // Boyutları biraz daha küçültelim
+        const radius = Math.random() * 0.9 + 0.15; // Boyutları %50 civarı artıralım
         const speed = Math.random() * 0.15 + 0.01; // Çok çok daha yavaş hız
         stars.push(new Star(x, y, radius, speed));
       }
     }
 
     function animateStars() {
-      requestAnimationFrame(animateStars);
+      animationFrameId = requestAnimationFrame(animateStars);
       bgCtx.fillStyle = 'rgba(0, 0, 0, 0.8)';
       bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
       stars.forEach(star => {
@@ -277,7 +281,7 @@
 
       // Fotoğraf Animasyonu
       function animatePhotos() {
-        setInterval(() => {
+        photoIntervalId = setInterval(() => {
           const randomIndex = Math.floor(Math.random() * floatingPhotos.length);
           const randomPhoto = floatingPhotos[randomIndex];
 
@@ -297,6 +301,18 @@
       if (bgMusic) {
         bgMusic.play().catch(error => {
           console.error("Müzik başlatılamadı:", error);
+        });
+
+        bgMusic.addEventListener('ended', () => {
+          cancelAnimationFrame(animationFrameId); // Yıldız animasyonunu durdur
+          clearInterval(photoIntervalId);      // Fotoğraf animasyonunu durdur
+          fallingPetals.forEach(petal => petal.style.animationPlayState = 'paused'); // Gül yapraklarını durdur
+          floatingPhotos.forEach(photo => photo.style.display = 'none'); // Fotoğrafları gizle
+          if (initialText) initialText.style.display = 'none';
+          if (secondText) secondText.style.display = 'none';
+          if (mothersDayText) mothersDayText.style.display = 'none';
+          if (mothersDayText2) mothersDayText2.style.display = 'none';
+          if (final टेक्स्ट) final टेक्स्ट.style.display = 'block'; // "İyi ki varsın" yazısını göster
         });
       }
 
