@@ -12,7 +12,7 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: black; /* Başlangıçta siyah arka plan */
+      background: black;
       color: #00ff99;
       font-family: 'Poppins', sans-serif;
       display: flex;
@@ -24,7 +24,7 @@
     /* Başlat butonu */
     .start-button-container {
       text-align: center;
-      z-index: 3; /* Diğer her şeyin üzerinde */
+      z-index: 3;
     }
 
     #start-button {
@@ -32,8 +32,8 @@
       color: #1a1a1a;
       font-family: 'Poppins', sans-serif;
       font-weight: bold;
-      font-size: 2em; /* Biraz daha büyük */
-      padding: 20px 40px; /* Biraz daha büyük */
+      font-size: 2em;
+      padding: 20px 40px;
       border: none;
       border-radius: 10px;
       cursor: pointer;
@@ -52,7 +52,7 @@
       width: 100%;
       height: 100%;
       z-index: 0;
-      display: none; /* Başlangıçta gizli */
+      display: none;
     }
 
     /* Ortadaki içerik (başlangıçta gizli) */
@@ -60,7 +60,7 @@
       text-align: center;
       z-index: 2;
       opacity: 0;
-      display: none; /* Başlangıçta gizli */
+      display: none;
     }
 
     @keyframes fadeIn {
@@ -73,18 +73,14 @@
       color: #ccffdd;
       text-shadow: 0 0 15px #00ff99;
       margin-bottom: 15px;
-      animation: pulseText 2s infinite alternate;
-    }
-
-    @keyframes pulseText {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.05); }
+      display: none; /* Başlangıçta tüm metinler gizli */
     }
 
     .heart-icon {
       font-size: 5em;
       color: #ff6666;
       animation: beat 1s infinite alternate;
+      display: none; /* Başlangıçta kalp ikonu gizli */
     }
 
     @keyframes beat {
@@ -101,7 +97,7 @@
       z-index: 1;
       opacity: 0;
       animation: fallPetal 8s linear infinite, fadeInPetal 1s ease-in forwards;
-      display: none; /* Başlangıçta gizli */
+      display: none;
     }
 
     @keyframes fallPetal {
@@ -123,7 +119,7 @@
       max-width: 200px;
       max-height: 200px;
       border-radius: 5px;
-      display: none; /* Başlangıçta gizli */
+      display: none;
     }
 
     .floating-photo.visible {
@@ -142,9 +138,9 @@
 
   <div class="content-container">
     <div id="initial-text" class="main-text">Eylül'üm, Canım Aşkım</div>
-    <div id="second-text" class="main-text" style="font-size: 2.5em; margin-top: 5px; display: none;">Seni Çok Seviyorum</div>
-    <div id="mothers-day-text" class="main-text" style="font-size: 2.5em; margin-top: 15px; display: none;">Anneciğim, seni çok seviyorum</div>
-    <div id="mothers-day-text-2" class="main-text" style="font-size: 3em; margin-top: 5px; display: none;">Anneler Günün Kutlu Olsun!</div>
+    <div id="second-text" class="main-text">Seni Çok Seviyorum</div>
+    <div id="mothers-day-text" class="main-text">Anneciğim, seni çok seviyorum</div>
+    <div id="mothers-day-text-2" class="main-text">Anneler Günün Kutlu Olsun!</div>
     <div class="heart-icon">❤️</div>
   </div>
 
@@ -154,30 +150,75 @@
     const startButton = document.getElementById('start-button');
     const startButtonContainer = document.querySelector('.start-button-container');
     const bgCanvas = document.getElementById('bg-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
     const contentContainer = document.querySelector('.content-container');
     const bgMusic = document.getElementById('bg-music');
-    const fallingPetals = document.querySelectorAll('.falling-petal');
-    const floatingPhotos = document.querySelectorAll('.floating-photo');
+    const fallingPetals = [];
+    const floatingPhotos = [];
+    const initialText = document.getElementById('initial-text');
+    const secondText = document.getElementById('second-text');
+    const mothersDayText = document.getElementById('mothers-day-text');
+    const mothersDayText2 = document.getElementById('mothers-day-text-2');
+    const heartIcon = document.querySelector('.heart-icon');
 
     // Başlangıçta tüm içerikleri gizle
     bgCanvas.style.display = 'none';
     contentContainer.style.display = 'none';
-    bgMusic.volume = 0.5; // İsteğe bağlı başlangıç ses seviyesi
-    fallingPetals.forEach(petal => petal.style.display = 'none');
-    floatingPhotos.forEach(photo => photo.style.display = 'none');
+    if (bgMusic) bgMusic.volume = 0.5;
+    initialText.style.display = 'block'; // İlk metin başta görünür
+    heartIcon.style.display = 'block';   // Kalp ikonu başta görünür
+
+    // Gül yapraklarını oluştur
+    for (let i = 0; i < 15; i++) {
+      const petal = document.createElement("img");
+      petal.src = "IMG_2039.png";
+      petal.className = "falling-petal";
+      petal.style.left = Math.random() * window.innerWidth + "px";
+      petal.style.animationDuration = 5 + Math.random() * 10 + "s";
+      petal.style.transform = `rotate(${Math.random() * 360}deg)`;
+      petal.style.display = 'none';
+      document.body.appendChild(petal);
+      fallingPetals.push(petal);
+      petal.addEventListener('animationend', () => {
+        petal.remove();
+      });
+    }
+
+    // Fotoğrafları oluştur
+    const photoContainer = document.createElement('div');
+    photoContainer.style.position = 'fixed';
+    photoContainer.style.top = '0';
+    photoContainer.style.left = '0';
+    photoContainer.style.width = '100%';
+    photoContainer.style.height = '100%';
+    photoContainer.style.pointerEvents = 'none';
+    photoContainer.style.zIndex = '1';
+    document.body.appendChild(photoContainer);
+
+    const imageSources = [];
+    for (let i = 1; i <= 8; i++) {
+      imageSources.push(`img/${i}.jpeg`);
+    }
+
+    for (let i = 0; i < imageSources.length; i++) {
+      const img = document.createElement('img');
+      img.src = imageSources[i];
+      img.className = 'floating-photo';
+      img.style.display = 'none';
+      photoContainer.appendChild(img);
+      floatingPhotos.push(img);
+    }
 
     startButton.addEventListener('click', () => {
-      // Başlat butonunu ve konteynerini kaldır
-      startButtonContainer.style.display = 'none';
+      if (startButtonContainer) startButtonContainer.style.display = 'none';
 
-      // Diğer içerikleri göster
       bgCanvas.style.display = 'block';
-      contentContainer.style.display = 'flex';
+      contentContainer.style.display = 'flex'; // Ya da block, tercihinize göre
       contentContainer.style.opacity = 1;
       fallingPetals.forEach(petal => petal.style.display = 'block');
       floatingPhotos.forEach(photo => photo.style.display = 'block');
 
-      // Yıldız animasyonunu başlat
+      // Yıldız Animasyonu
       const stars = [];
       const numStars = 200;
       const starColor = '#ffffff';
@@ -223,7 +264,7 @@
       initStars();
       animateStars();
 
-      // Fotoğraf animasyonunu başlat
+      // Fotoğraf Animasyonu
       function animatePhotos() {
         setInterval(() => {
           const randomIndex = Math.floor(Math.random() * floatingPhotos.length);
@@ -242,10 +283,28 @@
       animatePhotos();
 
       // Müziği başlat
-      bgMusic.play().catch(error => {
-        console.error("Müzik başlatılamadı:", error);
-      });
-    }, { once: true }); // Sadece bir kere çalışması için
+      if (bgMusic) {
+        bgMusic.play().catch(error => {
+          console.error("Müzik başlatılamadı:", error);
+        });
+      }
+
+      // Metin Değiştirme
+      setTimeout(() => {
+        if (initialText) initialText.style.display = 'none';
+        if (secondText) secondText.style.display = 'block';
+      }, 5000);
+
+      setTimeout(() => {
+        if (secondText) secondText.style.display = 'none';
+        if (mothersDayText) mothersDayText.style.display = 'block';
+      }, 10000);
+
+      setTimeout(() => {
+        if (mothersDayText) mothersDayText.style.display = 'none';
+        if (mothersDayText2) mothersDayText2.style.display = 'block';
+      }, 15000);
+    }, { once: true });
   </script>
 
 </body>
