@@ -162,43 +162,34 @@
     const stars = [];
     const starColor = '#ffffff';
 
-    // Başlangıçta tüm içerikleri gizle (ilk metin ve kalp hariç)
-    bgCanvas.style.display = 'none';
-    contentContainer.style.display = 'none';
-    secondText.style.display = 'none';
-    mothersDayText.style.display = 'none';
-    mothersDayText2.style.display = 'none';
-    heartIcon.style.display = 'none';
-    if (bgMusic) bgMusic.volume = 0.5;
-
     class Star {
       constructor(x, y, radius, speed) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.speed = speed;
-        this.tailLength = Math.random() * 10 + 5;
+        this.tailLength = Math.random() * 5 + 3;
         this.tail = [];
       }
       update() {
-        this.x -= this.speed;
-        this.y += (Math.random() - 0.5) * this.speed * 0.5; // Hafifçe yukarı aşağı hareket
+        this.y += this.speed; // Aşağı doğru hareket
+        this.x += (Math.random() - 0.5) * this.speed * 0.3; // Hafifçe sağa sola hareket
 
         this.tail.push({ x: this.x, y: this.y });
         if (this.tail.length > this.tailLength) {
           this.tail.shift();
         }
 
-        if (this.x < -this.radius) {
-          this.x = bgCanvas.width + this.radius;
-          this.y = Math.random() * bgCanvas.height;
+        if (this.y > bgCanvas.height + this.radius) {
+          this.y = -this.radius;
+          this.x = Math.random() * bgCanvas.width;
           this.tail = [];
         }
       }
       draw() {
         this.tail.forEach((p, index) => {
           const opacity = 1 - (index / this.tailLength);
-          const size = this.radius * (0.8 - (index / this.tailLength) * 0.5);
+          const size = this.radius * (0.7 - (index / this.tailLength) * 0.4);
           bgCtx.beginPath();
           bgCtx.arc(p.x, p.y, Math.max(0, size), 0, Math.PI * 2);
           bgCtx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
@@ -209,12 +200,12 @@
     }
 
     function initStars() {
-      stars.length = 0; // Önceki yıldızları temizle
+      stars.length = 0;
       for (let i = 0; i < numStars; i++) {
         const x = Math.random() * bgCanvas.width;
-        const y = Math.random() * bgCanvas.height;
-        const radius = Math.random() * 1.5 + 0.5;
-        const speed = Math.random() * 2 + 1; // Daha belirgin hızlar
+        const y = Math.random() * -bgCanvas.height * Math.random(); // Ekranın üstünden başla
+        const radius = Math.random() * 1.2 + 0.3;
+        const speed = Math.random() * 0.8 + 0.3; // Kar tanesi hızında
         stars.push(new Star(x, y, radius, speed));
       }
     }
