@@ -1,339 +1,322 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anneler Gününe Özel</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        /* Genel stil */
-        body {
-            margin: 0;
-            overflow: hidden;
-            background: black;
-            color: #00ff99;
-            font-family: 'Poppins', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anneler Gününe Özel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Genel stil */
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+      color: #00ff99;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-        /* Başlat butonu */
-        .start-button-container {
-            text-align: center;
-            z-index: 3;
-        }
+    /* Başlat butonu */
+    .start-button-container {
+      text-align: center;
+      z-index: 3;
+    }
 
-        #start-button {
-            background-color: rgba(0, 255, 153, 0.8);
-            color: #1a1a1a;
-            font-family: 'Poppins', sans-serif;
-            font-weight: bold;
-            font-size: 2em;
-            padding: 20px 40px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+    #start-button {
+      background-color: rgba(0, 255, 153, 0.8);
+      color: #1a1a1a;
+      font-family: 'Poppins', sans-serif;
+      font-weight: bold;
+      font-size: 2em;
+      padding: 20px 40px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
 
-        #start-button:hover {
-            background-color: rgba(0, 255, 153, 1);
-        }
+    #start-button:hover {
+      background-color: rgba(0, 255, 153, 1);
+    }
 
-        /* Arka plan için canvas (başlangıçta gizli) */
-        #bg-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            display: none;
-        }
+    /* Arka plan için canvas (başlangıçta gizli) */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      display: none;
+    }
 
-        /* Ortadaki içerik (başlangıçta gizli) */
-        .content-container {
-            text-align: center;
-            z-index: 2;
-            opacity: 0;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-        }
+    /* Ortadaki içerik (başlangıçta gizli) */
+    .content-container {
+      text-align: center;
+      z-index: 2;
+      opacity: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        .main-text {
-            font-size: 3.5em;
-            font-weight: bold;
-            color: #ccffdd;
-            text-shadow: 0 0 15px #00ff99;
-            margin-bottom: 15px;
-            display: none; /* Başlangıçta gizli */
-        }
+    .main-text {
+      font-size: 3.5em;
+      font-weight: bold;
+      color: #ccffdd;
+      text-shadow: 0 0 15px #00ff99;
+      margin-bottom: 15px;
+      display: none; /* Başlangıçta gizli */
+    }
 
-        .heart-icon {
-            font-size: 5em;
-            color: #ff6666;
-            animation: beat 1s infinite alternate;
-            margin-top: 20px;
-        }
+    .heart-icon {
+      font-size: 5em;
+      color: #ff6666;
+      animation: beat 1s infinite alternate;
+      margin-top: 20px;
+    }
 
-        @keyframes beat {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
+    @keyframes beat {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
 
-        /* Gül yaprakları (başlangıçta gizli) */
-        .falling-petal {
-            position: absolute;
-            width: 30px;
-            height: auto;
-            z-index: 1;
-            opacity: 0;
-            animation: fallPetal 8s linear infinite, fadeInPetal 1s ease-in forwards;
-            display: none;
-        }
+    /* Gül yaprakları (başlangıçta gizli) */
+    .falling-petal {
+      position: absolute;
+      width: 30px;
+      height: auto;
+      z-index: 1;
+      opacity: 0;
+      animation: fallPetal 8s linear infinite, fadeInPetal 1s ease-in forwards;
+      display: none;
+    }
 
-        @keyframes fallPetal {
-            0% { top: -50px; transform: translateX(0) rotate(0deg); }
-            100% { top: 110vh; transform: translateX(20px) rotate(360deg); }
-        }
+    @keyframes fallPetal {
+      0% { top: -50px; transform: translateX(0) rotate(0deg); }
+      100% { top: 110vh; transform: translateX(20px) rotate(360deg); }
+    }
 
-        @keyframes fadeInPetal {
-            to { opacity: 0.7; }
-        }
+    @keyframes fadeInPetal {
+      to { opacity: 0.7; }
+    }
 
-        /* Fotoğraf stilleri (başlangıçta gizli) */
-        .floating-photo {
-            position: absolute;
-            opacity: 0;
-            filter: blur(10px);
-            transition: opacity 1s ease-in-out, filter 1s ease-in-out;
-            z-index: 0; /* Yazının arkasında görünmesi için */
-            max-width: 150px; /* Responsive boyut */
-            max-height: 150px; /* Responsive boyut */
-            border-radius: 50%; /* Yuvarlak çerçeve */
-            display: none;
-            filter: blur(5px); /* Başlangıçta hafif flu */
-        }
+    /* Fotoğraf stilleri (başlangıçta gizli) */
+    .floating-photo {
+      position: absolute;
+      opacity: 0;
+      filter: blur(10px);
+      transition: opacity 1s ease-in-out, filter 1s ease-in-out;
+      z-index: 0; /* Yazının arkasında görünmesi için */
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 5px;
+      display: none;
+    }
 
-        .floating-photo.visible {
-            opacity: 0.8;
-            filter: blur(0px); /* Görünürken net */
-        }
-    </style>
+    .floating-photo.visible {
+      opacity: 0.8;
+      filter: blur(0px);
+    }
+  </style>
 </head>
 <body>
 
-    <div class="start-button-container">
-        <button id="start-button">Başlat</button>
-    </div>
+  <div class="start-button-container">
+    <button id="start-button">Başlat</button>
+  </div>
 
-    <canvas id="bg-canvas"></canvas>
+  <canvas id="bg-canvas"></canvas>
 
-    <div class="content-container">
-        <div id="initial-text" class="main-text">Eylül'üm, Canım Aşkım</div>
-        <div id="second-text" class="main-text">Seni Çok Seviyorum</div>
-        <div id="mothers-day-text" class="main-text">Anneciğim, seni çok seviyorum</div>
-        <div id="mothers-day-text-2" class="main-text">Anneler Günün Kutlu Olsun!</div>
-        <div id="final-text" class="main-text" style="display: none; font-size: 4em; color: #ffffcc; text-shadow: 0 0 20px #00ff99;">İyi ki varsın</div>
-        <div class="heart-icon">❤️</div>
-    </div>
+  <div class="content-container">
+    <div id="initial-text" class="main-text">Eylül'üm, Canım Aşkım</div>
+    <div id="second-text" class="main-text">Seni Çok Seviyorum</div>
+    <div id="mothers-day-text" class="main-text">Anneciğim, seni çok seviyorum</div>
+    <div id="mothers-day-text-2" class="main-text">Anneler Günün Kutlu Olsun!</div>
+    <div class="heart-icon">❤️</div>
+  </div>
 
-    <audio id="bg-music" src="sarki.mp3" loop></audio>
+  <audio id="bg-music" src="sarki.mp3" loop></audio>
 
-    <script>
-        const startButton = document.getElementById('start-button');
-        const startButtonContainer = document.querySelector('.start-button-container');
-        const bgCanvas = document.getElementById('bg-canvas');
-        const bgCtx = bgCanvas.getContext('2d');
-        const contentContainer = document.querySelector('.content-container');
-        const bgMusic = document.getElementById('bg-music');
-        const fallingPetals = [];
-        const floatingPhotos = [];
-        const initialText = document.getElementById('initial-text');
-        const secondText = document.getElementById('second-text');
-        const mothersDayText = document.getElementById('mothers-day-text');
-        const mothersDayText2 = document.getElementById('mothers-day-text-2');
-        const heartIcon = document.querySelector('.heart-icon');
-        const numStars = 200;
-        const stars = [];
-        const starColor = '#ffffff';
-        let animationFrameId; // Animasyon döngüsünün ID'sini saklayacak
-        let photoIntervalId;    // Fotoğraf animasyonunun interval ID'sini saklayacak
-        const final टेक्स्ट = document.getElementById('final-text');
+  <script>
+    const startButton = document.getElementById('start-button');
+    const startButtonContainer = document.querySelector('.start-button-container');
+    const bgCanvas = document.getElementById('bg-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    const contentContainer = document.querySelector('.content-container');
+    const bgMusic = document.getElementById('bg-music');
+    const fallingPetals = [];
+    const floatingPhotos = [];
+    const initialText = document.getElementById('initial-text');
+    const secondText = document.getElementById('second-text');
+    const mothersDayText = document.getElementById('mothers-day-text');
+    const mothersDayText2 = document.getElementById('mothers-day-text-2');
+    const heartIcon = document.querySelector('.heart-icon');
+    const numStars = 200;
+    const stars = [];
+    const starColor = '#ffffff';
 
-        class Star {
-            constructor(x, y, radius, speed) {
-                this.x = x;
-                this.y = y;
-                this.radius = radius;
-                this.speed = speed;
-                this.tailLength = Math.random() * 5 + 3;
-                this.tail = [];
-            }
-            update() {
-                this.y += this.speed; // Aşağı doğru hareket
-                this.x += (Math.random() - 0.5) * this.speed * 0.3; // Hafifçe sağa sola hareket
+    class Star {
+      constructor(x, y, radius, speed) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.speed = speed;
+        this.tailLength = Math.random() * 5 + 3;
+        this.tail = [];
+      }
+      update() {
+        this.y += this.speed; // Aşağı doğru hareket
+        this.x += (Math.random() - 0.5) * this.speed * 0.3; // Hafifçe sağa sola hareket
 
-                this.tail.push({ x: this.x, y: this.y });
-                if (this.tail.length > this.tailLength) {
-                    this.tail.shift();
-                }
-
-                if (this.y > bgCanvas.height + this.radius) {
-                    this.y = -this.radius;
-                    this.x = Math.random() * bgCanvas.width;
-                    this.tail = [];
-                }
-            }
-            draw() {
-                this.tail.forEach((p, index) => {
-                    const opacity = 1 - (index / this.tailLength);
-                    const size = this.radius * (0.7 - (index / this.tailLength) * 0.4);
-                    bgCtx.beginPath();
-                    bgCtx.arc(p.x, p.y, Math.max(0, size), 0, Math.PI * 2);
-                    bgCtx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-                    bgCtx.fill();
-                    bgCtx.closePath();
-                });
-            }
+        this.tail.push({ x: this.x, y: this.y });
+        if (this.tail.length > this.tailLength) {
+          this.tail.shift();
         }
 
-        function initStars() {
-            stars.length = 0;
-            for (let i = 0; i < numStars; i++) {
-                const x = Math.random() * bgCanvas.width;
-                const y = Math.random() * -bgCanvas.height * Math.random(); // Ekranın üstünden başla
-                const radius = Math.random() * 1.2 + 0.2; // Yaklaşık %50 büyütüldü
-                const speed = Math.random() * 0.2 + 0.02; // Çok daha yavaş hız
-                stars.push(new Star(x, y, radius, speed));
-            }
+        if (this.y > bgCanvas.height + this.radius) {
+          this.y = -this.radius;
+          this.x = Math.random() * bgCanvas.width;
+          this.tail = [];
         }
+      }
+      draw() {
+        this.tail.forEach((p, index) => {
+          const opacity = 1 - (index / this.tailLength);
+          const size = this.radius * (0.7 - (index / this.tailLength) * 0.4);
+          bgCtx.beginPath();
+          bgCtx.arc(p.x, p.y, Math.max(0, size), 0, Math.PI * 2);
+          bgCtx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+          bgCtx.fill();
+          bgCtx.closePath();
+        });
+      }
+    }
 
-        function animateStars() {
-            animationFrameId = requestAnimationFrame(animateStars);
-            bgCtx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-            bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
-            stars.forEach(star => {
-                star.update();
-                star.draw();
-            });
-        }
+    function initStars() {
+      stars.length = 0;
+      for (let i = 0; i < numStars; i++) {
+        const x = Math.random() * bgCanvas.width;
+        const y = Math.random() * -bgCanvas.height * Math.random(); // Ekranın üstünden başla
+        const radius = Math.random() * 0.6 + 0.1; // Boyutları biraz daha küçültelim
+        const speed = Math.random() * 0.15 + 0.01; // Çok çok daha yavaş hız
+        stars.push(new Star(x, y, radius, speed));
+      }
+    }
 
-        // Gül yapraklarını oluştur
-        for (let i = 0; i < 15; i++) {
-            const petal = document.createElement("img");
-            petal.src = "IMG_2039.png";
-            petal.className = "falling-petal";
-            petal.style.left = Math.random() * window.innerWidth + "px";
-            petal.style.animationDuration = 5 + Math.random() * 10 + "s";
-            petal.style.transform = `rotate(${Math.random() * 360}deg)`;
-            petal.style.display = 'none';
-            document.body.appendChild(petal);
-            fallingPetals.push(petal);
-            petal.addEventListener('animationend', () => {
-                petal.remove();
-            });
-        }
+    function animateStars() {
+      requestAnimationFrame(animateStars);
+      bgCtx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+      bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+      stars.forEach(star => {
+        star.update();
+        star.draw();
+      });
+    }
 
-        // Fotoğrafları oluştur
-        const photoContainer = document.createElement('div');
-        photoContainer.style.position = 'fixed';
-        photoContainer.style.top = '0';
-        photoContainer.style.left = '0';
-        photoContainer.style.width = '100%';
-        photoContainer.style.height = '100%';
-        photoContainer.style.pointerEvents = 'none';
-        photoContainer.style.zIndex = '1'; // Yazıların üzerinde kalması için (isteğe bağlı)
-        document.body.appendChild(photoContainer);
+    // Gül yapraklarını oluştur
+    for (let i = 0; i < 15; i++) {
+      const petal = document.createElement("img");
+      petal.src = "IMG_2039.png";
+      petal.className = "falling-petal";
+      petal.style.left = Math.random() * window.innerWidth + "px";
+      petal.style.animationDuration = 5 + Math.random() * 10 + "s";
+      petal.style.transform = `rotate(${Math.random() * 360}deg)`;
+      petal.style.display = 'none';
+      document.body.appendChild(petal);
+      fallingPetals.push(petal);
+      petal.addEventListener('animationend', () => {
+        petal.remove();
+      });
+    }
 
-        const imageSources = [];
-        for (let i = 1; i <= 8; i++) {
-            imageSources.push(`img/${i}.jpeg`);
-        }
+    // Fotoğrafları oluştur
+    const photoContainer = document.createElement('div');
+    photoContainer.style.position = 'fixed';
+    photoContainer.style.top = '0';
+    photoContainer.style.left = '0';
+    photoContainer.style.width = '100%';
+    photoContainer.style.height = '100%';
+    photoContainer.style.pointerEvents = 'none';
+    photoContainer.style.zIndex = '1'; // Yazıların üzerinde kalması için (isteğe bağlı)
+    document.body.appendChild(photoContainer);
 
-        for (let i = 0; i < imageSources.length; i++) {
-            const img = document.createElement('img');
-            img.src = imageSources[i];
-            img.className = 'floating-photo';
-            img.style.display = 'none';
-            photoContainer.appendChild(img);
-            floatingPhotos.push(img);
-        }
+    const imageSources = [];
+    for (let i = 1; i <= 8; i++) {
+      imageSources.push(`img/${i}.jpeg`);
+    }
 
-        startButton.addEventListener('click', () => {
-            if (startButtonContainer) startButtonContainer.style.display = 'none';
+    for (let i = 0; i < imageSources.length; i++) {
+      const img = document.createElement('img');
+      img.src = imageSources[i];
+      img.className = 'floating-photo';
+      img.style.display = 'none';
+      photoContainer.appendChild(img);
+      floatingPhotos.push(img);
+    }
 
-            bgCanvas.style.display = 'block';
-            contentContainer.style.display = 'flex';
-            contentContainer.style.opacity = 1;
-            initialText.style.display = 'block';
-            heartIcon.style.display = 'block';
-            fallingPetals.forEach(petal => petal.style.display = 'block');
-            floatingPhotos.forEach(photo => photo.style.display = 'block');
+    startButton.addEventListener('click', () => {
+      if (startButtonContainer) startButtonContainer.style.display = 'none';
 
-            initStars();
-            animateStars();
+      bgCanvas.style.display = 'block';
+      contentContainer.style.display = 'flex';
+      contentContainer.style.opacity = 1;
+      initialText.style.display = 'block';
+      heartIcon.style.display = 'block';
+      fallingPetals.forEach(petal => petal.style.display = 'block');
+      floatingPhotos.forEach(photo => photo.style.display = 'block');
 
-            // Fotoğraf Animasyonu
-            function animatePhotos() {
-                photoIntervalId = setInterval(() => {
-                    const randomIndex = Math.floor(Math.random() * floatingPhotos.length);
-                    const randomPhoto = floatingPhotos[randomIndex];
+      initStars();
+      animateStars();
 
-                    randomPhoto.style.left = `${Math.random() * (window.innerWidth - 180)}px`; // Biraz daha içerde kalsın
-                    randomPhoto.style.top = `${Math.random() * (window.innerHeight - 180)}px`; // Biraz daha içerde kalsın
-                    randomPhoto.style.transform = `scale(${0.6 + Math.random() * 0.6})`; // Biraz daha büyük ve çeşitli boyutlar
+      // Fotoğraf Animasyonu
+      function animatePhotos() {
+        setInterval(() => {
+          const randomIndex = Math.floor(Math.random() * floatingPhotos.length);
+          const randomPhoto = floatingPhotos[randomIndex];
 
-                    randomPhoto.classList.add('visible');
-                    setTimeout(() => {
-                        randomPhoto.classList.remove('visible');
-                    }, 3000);
-                }, 5000);
-            }
-            animatePhotos();
+          randomPhoto.style.left = `${Math.random() * (window.innerWidth - 200)}px`;
+          randomPhoto.style.top = `${Math.random() * (window.innerHeight - 200)}px`;
+          randomPhoto.style.transform = `scale(${0.5 + Math.random() * 0.7})`;
 
-            // Müziği başlat ve bitince aksiyon al
-            if (bgMusic) {
-                bgMusic.play().catch(error => {
-                    console.error("Müzik başlatılamadı:", error);
-                });
+          randomPhoto.classList.add('visible');
+          setTimeout(() => {
+            randomPhoto.classList.remove('visible');
+          }, 3000);
+        }, 5000);
+      }
+      animatePhotos();
 
-                bgMusic.addEventListener('ended', () => {
-                    cancelAnimationFrame(animationFrameId); // Yıldız animasyonunu durdur
-                    clearInterval(photoIntervalId);      // Fotoğraf animasyonunu durdur
-                    fallingPetals.forEach(petal => petal.style.animationPlayState = 'paused'); // Gül yapraklarını durdur
-                    floatingPhotos.forEach(photo => photo.style.display = 'none'); // Fotoğrafları gizle
-                    if (initialText) initialText.style.display = 'none';
-                    if (secondText) secondText.style.display = 'none';
-                    if (mothersDayText) mothersDayText.style.display = 'none';
-                    if (mothersDayText2) mothersDayText2.style.display = 'none';
-                    if (final टेक्स्ट) final टेक्स्ट.style.display = 'block'; // "İyi ki varsın" yazısını göster
-                });
-            }
+      // Müziği başlat
+      if (bgMusic) {
+        bgMusic.play().catch(error => {
+          console.error("Müzik başlatılamadı:", error);
+        });
+      }
 
-            // Metin Değiştirme
-            setTimeout(() => {
-                if (initialText) initialText.style.display = 'none';
-                if (secondText) secondText.style.display = 'block';
-            }, 5000);
+      // Metin Değiştirme
+      setTimeout(() => {
+        if (initialText) initialText.style.display = 'none';
+        if (secondText) secondText.style.display = 'block';
+      }, 5000);
 
-            setTimeout(() => {
-                if (secondText) secondText.style.display = 'none';
-                if (mothersDayText) mothersDayText.style.display = 'block';
-            }, 10000);
+      setTimeout(() => {
+        if (secondText) secondText.style.display = 'none';
+        if (mothersDayText) mothersDayText.style.display = 'block';
+      }, 10000);
 
-            setTimeout(() => {
-                if (mothersDayText) mothersDayText.style.display = 'none';
-                if (mothersDayText2) mothersDayText2.style.display = 'block';
-            }, 15000);
-        }, { once: true });
-    </script>
+      setTimeout(() => {
+        if (mothersDayText) mothersDayText.style.display = 'none';
+        if (mothersDayText2) mothersDayText2.style.display = 'block';
+      }, 15000);
+    }, { once: true });
+  </script>
 
 </body>
 </html>
