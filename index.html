@@ -12,7 +12,7 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: black;
+      background: black; /* Başlangıçta siyah arka plan */
       color: #00ff99;
       font-family: 'Poppins', sans-serif;
       display: flex;
@@ -24,7 +24,7 @@
     /* Başlat butonu */
     .start-button-container {
       text-align: center;
-      z-index: 3;
+      z-index: 3; /* Diğer her şeyin üzerinde */
     }
 
     #start-button {
@@ -32,8 +32,8 @@
       color: #1a1a1a;
       font-family: 'Poppins', sans-serif;
       font-weight: bold;
-      font-size: 2em;
-      padding: 20px 40px;
+      font-size: 2em; /* Biraz daha büyük */
+      padding: 20px 40px; /* Biraz daha büyük */
       border: none;
       border-radius: 10px;
       cursor: pointer;
@@ -52,7 +52,7 @@
       width: 100%;
       height: 100%;
       z-index: 0;
-      display: none;
+      display: none; /* Başlangıçta gizli */
     }
 
     /* Ortadaki içerik (başlangıçta gizli) */
@@ -60,7 +60,7 @@
       text-align: center;
       z-index: 2;
       opacity: 0;
-      display: none;
+      display: none; /* Başlangıçta gizli */
     }
 
     @keyframes fadeIn {
@@ -101,7 +101,7 @@
       z-index: 1;
       opacity: 0;
       animation: fallPetal 8s linear infinite, fadeInPetal 1s ease-in forwards;
-      display: none;
+      display: none; /* Başlangıçta gizli */
     }
 
     @keyframes fallPetal {
@@ -123,7 +123,7 @@
       max-width: 200px;
       max-height: 200px;
       border-radius: 5px;
-      display: none;
+      display: none; /* Başlangıçta gizli */
     }
 
     .floating-photo.visible {
@@ -154,68 +154,30 @@
     const startButton = document.getElementById('start-button');
     const startButtonContainer = document.querySelector('.start-button-container');
     const bgCanvas = document.getElementById('bg-canvas');
-    const bgCtx = bgCanvas.getContext('2d');
     const contentContainer = document.querySelector('.content-container');
     const bgMusic = document.getElementById('bg-music');
-    const fallingPetals = [];
-    const floatingPhotos = [];
+    const fallingPetals = document.querySelectorAll('.falling-petal');
+    const floatingPhotos = document.querySelectorAll('.floating-photo');
 
     // Başlangıçta tüm içerikleri gizle
     bgCanvas.style.display = 'none';
     contentContainer.style.display = 'none';
-    if (bgMusic) bgMusic.volume = 0.5;
-
-    // Gül yapraklarını oluştur
-    for (let i = 0; i < 15; i++) {
-      const petal = document.createElement("img");
-      petal.src = "IMG_2039.png";
-      petal.className = "falling-petal";
-      petal.style.left = Math.random() * window.innerWidth + "px";
-      petal.style.animationDuration = 5 + Math.random() * 10 + "s";
-      petal.style.transform = `rotate(${Math.random() * 360}deg)`;
-      petal.style.display = 'none';
-      document.body.appendChild(petal);
-      fallingPetals.push(petal);
-      petal.addEventListener('animationend', () => {
-        petal.remove();
-      });
-    }
-
-    // Fotoğrafları oluştur
-    const photoContainer = document.createElement('div');
-    photoContainer.style.position = 'fixed';
-    photoContainer.style.top = '0';
-    photoContainer.style.left = '0';
-    photoContainer.style.width = '100%';
-    photoContainer.style.height = '100%';
-    photoContainer.style.pointerEvents = 'none';
-    photoContainer.style.zIndex = '1';
-    document.body.appendChild(photoContainer);
-
-    const imageSources = [];
-    for (let i = 1; i <= 8; i++) {
-      imageSources.push(`img/${i}.jpeg`);
-    }
-
-    for (let i = 0; i < imageSources.length; i++) {
-      const img = document.createElement('img');
-      img.src = imageSources[i];
-      img.className = 'floating-photo';
-      img.style.display = 'none';
-      photoContainer.appendChild(img);
-      floatingPhotos.push(img);
-    }
+    bgMusic.volume = 0.5; // İsteğe bağlı başlangıç ses seviyesi
+    fallingPetals.forEach(petal => petal.style.display = 'none');
+    floatingPhotos.forEach(photo => photo.style.display = 'none');
 
     startButton.addEventListener('click', () => {
-      if (startButtonContainer) startButtonContainer.style.display = 'none';
+      // Başlat butonunu ve konteynerini kaldır
+      startButtonContainer.style.display = 'none';
 
+      // Diğer içerikleri göster
       bgCanvas.style.display = 'block';
       contentContainer.style.display = 'flex';
       contentContainer.style.opacity = 1;
       fallingPetals.forEach(petal => petal.style.display = 'block');
       floatingPhotos.forEach(photo => photo.style.display = 'block');
 
-      // Yıldız Animasyonu
+      // Yıldız animasyonunu başlat
       const stars = [];
       const numStars = 200;
       const starColor = '#ffffff';
@@ -261,7 +223,7 @@
       initStars();
       animateStars();
 
-      // Fotoğraf Animasyonu
+      // Fotoğraf animasyonunu başlat
       function animatePhotos() {
         setInterval(() => {
           const randomIndex = Math.floor(Math.random() * floatingPhotos.length);
@@ -280,26 +242,10 @@
       animatePhotos();
 
       // Müziği başlat
-      if (bgMusic) {
-        bgMusic.play().catch(error => {
-          console.error("Müzik başlatılamadı:", error);
-        });
-      }
-
-      // Metin Değiştirme (başlat butonundan sonra 10 saniye sonra çalışacak)
-      const initialText = document.getElementById('initial-text');
-      const secondText = document.getElementById('second-text');
-      const mothersDayText = document.getElementById('mothers-day-text');
-      const mothersDayText2 = document.getElementById('mothers-day-text-2');
-
-      setTimeout(() => {
-        if (initialText) initialText.style.display = 'none';
-        if (secondText) secondText.style.display = 'none';
-        if (mothersDayText) mothersDayText.style.display = 'block';
-        if (mothersDayText2) mothersDayText2.style.display = 'block';
-        document.title = "Anneler Gününe Özel";
-      }, 10000);
-    }, { once: true });
+      bgMusic.play().catch(error => {
+        console.error("Müzik başlatılamadı:", error);
+      });
+    }, { once: true }); // Sadece bir kere çalışması için
   </script>
 
 </body>
